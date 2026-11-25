@@ -6,6 +6,10 @@
 <title>PDF Toolkit</title>
 <meta name="description" content="Merge, split, organize, number, watermark and convert PDFs in your browser. Files never leave your device.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23e5484d'/%3E%3Cpath d='M10 7h9l5 5v13H10z' fill='white'/%3E%3Cpath d='M19 7v5h5' fill='%23f3b0b2'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#e5484d">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="PDF Toolkit">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Caveat:wght@600&display=swap">
@@ -593,7 +597,39 @@
   }
   .rail-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .rail-foot .theme { display: none; }
-  .rail-foot:not(:has(.asksave:not([hidden]))) { display: none; }
+  .rail-foot:not(:has(.asksave:not([hidden]), .offline:not([hidden]), .install:not([hidden]))) { display: none; }
+  .install-top { display: none !important; }
+  @media (max-width: 860px) { .install-top:not([hidden]) { display: grid !important; color: var(--accent); } }
+  .rail-foot .btn.install { justify-content: center; width: 100%; padding: 8px 12px; }
+  #batchActions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 680px) { #batchActions { grid-template-columns: minmax(0, 1fr); } }
+  .rail-acts { display: flex; align-items: center; gap: 4px; }
+  .btn.install { padding: 6px 11px; font-size: 13px; border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); color: var(--accent); animation: pop .4s var(--spring) both; }
+  .btn.install svg.i { width: 15px; height: 15px; }
+  .offline { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 500; color: var(--ok); }
+  .offline svg.i { width: 15px; height: 15px; stroke-width: 2.6; }
+  .recent { display: flex; flex-direction: column; gap: 10px; animation: rise .45s var(--ease) both; }
+  .recent-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .recent-head h2 { margin: 0; font-size: 17px; letter-spacing: -.01em; }
+  .recent-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+  .rfile { display: flex; align-items: center; gap: 12px; padding: 10px 8px 10px 10px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-1); cursor: pointer;
+    animation: rise .35s var(--ease) both; animation-delay: calc(var(--i) * 40ms); transition: transform .25s var(--ease), box-shadow .25s, border-color .2s; }
+  .rfile:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); border-color: var(--line-2); }
+  .rfile.leaving { animation: leave .22s var(--ease) forwards; }
+  .rthumb { width: 36px; height: 46px; flex: none; border-radius: 5px; overflow: hidden; border: 1px solid var(--line); background: #fff; display: grid; place-items: center; }
+  .rthumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .rfile .who { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .rfile b { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rfile .meta { font-size: 12px; overflow: hidden; text-overflow: ellipsis; }
+  .recent-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 10px; animation: rise .3s var(--ease) both; }
+  .recent-row .meta { display: inline-flex; align-items: center; gap: 5px; margin-right: 2px; }
+  .recent-row .meta svg { width: 14px; height: 14px; }
+  .rchip { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); font-family: var(--font); font-weight: 500; }
+  #batchList li[data-status=work] { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent); }
+  #batchList li[data-status=work] .meta { color: var(--accent); }
+  #batchList li[data-status=done] .meta { color: var(--ok); }
+  #batchList li[data-status=fail] { border-color: color-mix(in srgb, var(--danger) 40%, var(--line)); } #batchList li[data-status=fail] .meta { color: var(--danger); white-space: normal; }
+  #batchList li[data-status=done] .num { background: var(--ok); color: #fff; border-color: transparent; }
   @media (max-width: 520px) {
     .tools .up-down { display: none; }
     .namefield { max-width: none; }
@@ -661,6 +697,9 @@
   <symbol id="i-broom" viewBox="0 0 24 24"><path d="m14 4-1 7M8.5 11h9l1.5 9H7Z"/><path d="M10 15v5M14 15v5"/></symbol>
   <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-batch" viewBox="0 0 24 24"><rect x="2" y="7" width="14" height="14" rx="2"/><path d="M6 3h12a3 3 0 0 1 3 3v12"/><path d="m6 14 2 2 4-4"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M5 21h14"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
   <symbol id="i-crop" viewBox="0 0 24 24"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></symbol>
@@ -674,7 +713,10 @@
         <span class="logo"><svg viewBox="0 0 24 24" fill="#fff"><path d="M6 2h8l5 5v15H6z"/><path d="M14 2v5h5" fill="rgba(255,255,255,.55)"/></svg></span>
         <span><b>PDF Toolkit</b><small>Private and free</small></span>
       </a>
-      <button class="ibtn theme-mini" data-theme-toggle title="Switch theme" aria-label="Switch theme"><svg class="i"><use href="#i-moon"/></svg></button>
+      <span class="rail-acts">
+        <button class="ibtn install-top" data-install hidden title="Install PDF Toolkit as an app" aria-label="Install PDF Toolkit as an app"><svg class="i"><use href="#i-download"/></svg></button>
+        <button class="ibtn theme-mini" data-theme-toggle title="Switch theme" aria-label="Switch theme"><svg class="i"><use href="#i-moon"/></svg></button>
+      </span>
     </div>
     <nav class="nav" id="nav" aria-label="Tools">
       <div class="nav-ind" id="navInd"></div>
@@ -685,6 +727,7 @@
       <div class="group">Pages</div>
       <a href="#organize" data-view="organize"><svg class="i"><use href="#i-grid"/></svg>Organize pages</a>
       <a href="#split" data-view="split"><svg class="i"><use href="#i-split"/></svg>Split / extract</a>
+      <a href="#batch" data-view="batch"><svg class="i"><use href="#i-batch"/></svg>Batch (many files)</a>
       <a href="#crop" data-view="crop"><svg class="i"><use href="#i-crop"/></svg>Crop &amp; resize</a>
       <a href="#bookmarks" data-view="bookmarks"><svg class="i"><use href="#i-bookmark"/></svg>Bookmarks</a>
       <a href="#compare" data-view="compare"><svg class="i"><use href="#i-compare"/></svg>Compare</a>
@@ -711,6 +754,8 @@
     </nav>
     <div class="rail-foot">
       <label class="switch asksave" hidden title="Off: files go straight to your Downloads folder"><input type="checkbox" id="askWhere">Ask where to save</label>
+      <button class="btn small install" id="installBtn" data-install hidden title="Install PDF Toolkit as an app on this device"><svg class="i"><use href="#i-download"/></svg>Install app</button>
+      <span class="offline" id="offlineNote" hidden><svg class="i"><use href="#i-check"/></svg>Works offline</span>
       <button class="theme" data-theme-toggle><svg class="i"><use href="#i-moon"/></svg><span>Dark mode</span></button>
     </div>
   </aside>
@@ -724,10 +769,16 @@
         <p>Merge, split, reorder, number, watermark and convert PDFs in seconds. No account, no waiting on a server.</p>
       </div>
       <ol class="howto">
-        <li><b>Pick a tool</b><span>Search below, or choose from the list on the left.</span></li>
+        <li><b>Pick a tool</b><span>Search below, or choose one from the tool list.</span></li>
         <li><b>Add your PDF</b><span>Drop it in the box. It stays open in every tool, so you can do several things in a row.</span></li>
         <li><b>Save</b><span>Your new file downloads. Click "Keep editing it" to carry on with another tool.</span></li>
       </ol>
+      <section class="recent" id="recentBox" hidden>
+        <div class="recent-head"><h2>Recent files</h2><span class="meta">Kept only on this device</span><span class="grow"></span>
+          <label class="switch plain" title="Keep the PDFs you open on this device, so you can reopen them in one click"><input type="checkbox" id="recentOn" checked>Remember</label>
+          <button class="btn small ghosty" id="recentClear">Clear all</button></div>
+        <div class="recent-list" id="recentList"></div>
+      </section>
       <label class="search"><svg class="i"><use href="#i-search"/></svg><input type="search" id="toolSearch" placeholder="What do you want to do? Try &quot;smaller&quot;, &quot;sign&quot; or &quot;password&quot;" aria-label="Search the tools"><kbd>/</kbd></label>
       <div class="cards" id="cards"></div>
     </section>
@@ -944,6 +995,36 @@
       <div class="preview" data-preview="numbers"></div>
       </div>
       <div class="bar"><span class="grow"></span><button class="btn primary" id="numGo">Add page numbers</button></div>
+      <div class="status"></div>
+    </section>
+
+    <!-- BATCH -->
+    <section class="view" id="view-batch" hidden>
+      <div class="head"><span class="tile"><svg class="i"><use href="#i-batch"/></svg></span><div><h1>Batch</h1><p>Do the same thing to many PDFs at once, and get them all back in one zip.</p></div></div>
+      <div class="drop" data-drop="batch"></div>
+      <ul class="files" id="batchList"></ul>
+      <div class="levels choices" id="batchActions">
+        <label class="level"><input type="radio" name="batchAct" value="compress" checked><b>Compress</b><span>Make every file smaller.</span></label>
+        <label class="level"><input type="radio" name="batchAct" value="numbers"><b>Page numbers</b><span>Number the pages of each file.</span></label>
+        <label class="level"><input type="radio" name="batchAct" value="watermark"><b>Watermark</b><span>Write the same text across every file.</span></label>
+        <label class="level"><input type="radio" name="batchAct" value="protect"><b>Password</b><span>Lock every file with one password.</span></label>
+        <label class="level"><input type="radio" name="batchAct" value="rotate"><b>Rotate</b><span>Turn all the pages of every file.</span></label>
+        <label class="level"><input type="radio" name="batchAct" value="clean"><b>Remove hidden data</b><span>Strip names, attachments, scripts and comments.</span></label>
+      </div>
+      <div class="form" id="batchOpts">
+        <label data-ba="compress">Level <select id="baLevel"><option value="light">Light (text stays selectable)</option><option value="medium" selected>Recommended</option><option value="strong">Strong</option></select></label>
+        <label data-ba="numbers">Position <select id="baNumPos"><option value="b-c">Bottom center</option><option value="b-r">Bottom right</option><option value="t-r">Top right</option></select></label>
+        <label data-ba="numbers">Format <select id="baNumFmt"><option value="of">Page 1 of 10</option><option value="n">1</option><option value="slash">1 / 10</option></select></label>
+        <label data-ba="watermark" class="wide">Text <input type="text" id="baWmText" value="CONFIDENTIAL"></label>
+        <label data-ba="watermark"><span class="row">Opacity <span class="meta" id="baWmOpL">25%</span></span><input type="range" id="baWmOp" min="5" max="100" value="25"></label>
+        <label data-ba="protect">Password <span class="pw"><input type="password" id="baPw" autocomplete="new-password"><button class="ibtn" type="button" data-eye="baPw" aria-label="Show password"><svg class="i"><use href="#i-eye"/></svg></button></span></label>
+        <label data-ba="protect">Type it again <input type="password" id="baPw2" autocomplete="new-password"></label>
+        <label data-ba="rotate">Turn
+          <div class="seg"><label><input type="radio" name="baRot" value="90" checked><span>Right</span></label><label><input type="radio" name="baRot" value="270"><span>Left</span></label><label><input type="radio" name="baRot" value="180"><span>Upside down</span></label></div>
+        </label>
+        <p class="hint wide" data-ba="clean">Removes document details, hidden XMP data, scripts, attached files, comments and app data from every file.</p>
+      </div>
+      <div class="bar"><span class="meta" id="batchSum"></span><span class="grow"></span><button class="btn" id="batchClear" hidden>Clear all</button><button class="btn primary" id="batchGo" disabled>Run on all files</button></div>
       <div class="status"></div>
     </section>
 
@@ -1573,7 +1654,7 @@ async function setCurrent(name, bytes) {
   const js = await loadJs(bytes);
   const c = { name, bytes, pages: js.numPages, size: bytes.length, thumb: await renderPage(js, 1, 90) };
   js.destroy();
-  current = c; renderSources();
+  current = c; renderSources(); recentPut(c);
   $$('.view').forEach(p => { if ($('[data-src]', p)) setStatus(p, ''); });
   fillInfo(); refreshActive();
 }
@@ -1621,6 +1702,7 @@ function renderSources() {
     }
   });
   $('#orgBar').hidden = !current;
+  drawRecent();
   $('#signWork').hidden = !current;
   ['#annEd', '#annBar', '#redEd', '#redBar', '#redFind', '#redNote'].forEach(s => { $(s).hidden = !current; });
   if (!current) $('#orgGrid').innerHTML = '';
@@ -2981,7 +3063,12 @@ function drawClean() {
 function countClean() { const n = cln.found.filter(f => f.on).length; $('#cleanCount').textContent = `${n} of ${plural(cln.found.length, 'kind')} of hidden data selected`; $('#cleanGo').disabled = !n; }
 $('#cleanGo').onclick = () => busy(view('clean'), $('#cleanGo'), async () => {
   const p = view('clean'); if (!needFile(p)) return;
-  const N = PDFLib.PDFName, doc = await loadLib(current.bytes, { updateMetadata: false }), cat = doc.catalog, ctx = doc.context, on = new Set(cln.found.filter(f => f.on).map(f => f.id));
+  const on = new Set(cln.found.filter(f => f.on).map(f => f.id));
+  await saved(p, await cleanPdf(current.bytes, on), base(current.name) + '-clean.pdf', `${plural(on.size, 'kind')} of hidden data removed`);
+});
+// the removing itself, shared with Batch. on: the kinds to remove (info, xmp, js, files, comments, piece)
+async function cleanPdf(src, on) {
+  const N = PDFLib.PDFName, doc = await loadLib(src, { updateMetadata: false }), cat = doc.catalog, ctx = doc.context;
   const names = cat.lookup(N.of('Names'));
   if (on.has('info')) { const info = doc.getInfoDict(); [...info.keys()].forEach(k => info.delete(k)); }
   if (on.has('xmp')) cat.delete(N.of('Metadata'));
@@ -2998,8 +3085,8 @@ $('#cleanGo').onclick = () => busy(view('clean'), $('#cleanGo'), async () => {
     pg.node.set(N.of('Annots'), ctx.obj(keep));
   });
   if (names && names.keys && ![...names.keys()].length) cat.delete(N.of('Names'));
-  await saved(p, await doc.save(), base(current.name) + '-clean.pdf', `${plural(on.size, 'kind')} of hidden data removed`);
-});
+  return doc.save();
+}
 
 /* ---------- a guide on every tool ---------- */
 const GUIDES = {
@@ -3018,6 +3105,7 @@ const GUIDES = {
   watermark: [['Open a PDF.', 'Choose text (like CONFIDENTIAL) or an image such as your logo.', 'Set the size, angle and opacity. Check the preview.', 'Click Add watermark.'], 'A logo with a transparent background (PNG) looks best.'],
   redact: [['Open a PDF.', 'Draw black boxes over what must go, or type a word and click Find and mark. Emails and phone numbers can be found the same way.', 'Check every page.', 'Click Save redacted PDF.'], 'Pages with boxes are saved as pictures, so the hidden text is truly gone.'],
   info: [['Open a PDF.', 'Change the title, author and other details.', 'Click Save PDF.'], 'To remove all hidden details at once, use Remove hidden data.'],
+  batch: [['Drop all the PDFs you want to change.', 'Choose what to do to them: compress, number, watermark, lock with a password, rotate or clean.', 'Set the options for that action.', 'Click Run on all files. You get them back together in one zip.'], 'Each file shows its result. If one fails, the reason is next to it and the others are still done.'],
   protect: [['Open a PDF.', 'Type a password twice.', 'Optional: limit printing, copying or changes, and choose an owner password.', 'Click Protect PDF.'], 'Keep the password safe: it cannot be recovered if you lose it.'],
   unlock: [['Drop the locked PDF in the box.', 'Type its password.', 'Click Unlock PDF.'], 'Only for PDFs you are allowed to open: you need the password.'],
   clean: [['Open a PDF.', 'See what hidden data was found: names, attachments, scripts, comments.', 'Untick anything you want to keep.', 'Click Remove selected.'], 'Do this before sending a file to people outside your company.'],
@@ -3041,6 +3129,146 @@ function filterTools() {
   const q = $('#toolSearch').value.trim().toLowerCase(); let shown = 0;
   $$('.card').forEach(c => { const hit = !q || c.textContent.toLowerCase().includes(q) || (c.dataset.keys || '').includes(q); c.hidden = !hit; if (hit) shown++; });
   $('#noTools').hidden = shown > 0;
+}
+
+/* ---------- RECENT FILES: kept in this browser's own database (IndexedDB), never uploaded ---------- */
+const RECENT_MAX = 8, RECENT_FILE_MAX = 60 * 1048576, RECENT_TOTAL_MAX = 150 * 1048576;
+let recentOn = true; try { recentOn = localStorage.getItem('pdfkit-recent') !== 'off'; } catch {}
+let recentList = [];
+function idb() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('pdfkit', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('recent', { keyPath: 'id' });
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+}
+async function idbDo(mode, fn) {
+  const db = await idb();
+  return new Promise((res, rej) => { const tx = db.transaction('recent', mode), out = fn(tx.objectStore('recent')); tx.oncomplete = () => { db.close(); res(out && out.result); }; tx.onerror = () => { db.close(); rej(tx.error); }; });
+}
+async function recentLoad() {
+  try { recentList = ((await idbDo('readonly', s => s.getAll())) || []).sort((a, b) => b.at - a.at); } catch { recentList = []; }
+  drawRecent();
+}
+async function recentPut(c) {
+  if (!recentOn || c.bytes.length > RECENT_FILE_MAX) return;
+  try {
+    const id = c.name + '|' + c.bytes.length, thumb = c.thumb.toDataURL('image/jpeg', 0.7);
+    await idbDo('readwrite', s => s.put({ id, name: c.name, size: c.bytes.length, pages: c.pages, thumb, at: Date.now(), blob: new Blob([c.bytes], { type: 'application/pdf' }) }));
+    // keep the newest few, within a total size
+    const all = ((await idbDo('readonly', s => s.getAll())) || []).sort((a, b) => b.at - a.at); let total = 0;
+    const drop = all.filter((r, i) => { total += r.size; return i >= RECENT_MAX || total > RECENT_TOTAL_MAX; });
+    if (drop.length) await idbDo('readwrite', s => drop.forEach(r => s.delete(r.id)));
+  } catch (e) { console.warn('recent', e); }
+  recentLoad();
+}
+async function recentOpen(id) {
+  try {
+    const r = await idbDo('readonly', s => s.get(id)); if (!r) { recentLoad(); return; }
+    await setCurrent(r.name, new Uint8Array(await r.blob.arrayBuffer()));
+    if (active === 'home') toast(`Opened ${r.name}`, 'It is open in every tool now. Pick one below.');
+  } catch { toast('That file could not be opened', 'It may have been cleared from this device.', null, 'info'); recentLoad(); }
+}
+const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? `${m} min ago` : m < 1440 ? `${Math.round(m / 60)} h ago` : `${Math.round(m / 1440)} d ago`; };
+function drawRecent() {
+  $('#recentOn').checked = recentOn;
+  $('#recentBox').hidden = !recentList.length && recentOn;
+  $('#recentList').innerHTML = recentOn ? recentList.map((r, i) => `<div class="rfile" style="--i:${i}" data-id="${escapeHtml(r.id)}" role="button" tabindex="0" title="Open ${escapeHtml(r.name)}">
+      <span class="rthumb"><img alt="" src="${r.thumb}"></span><span class="who"><b>${escapeHtml(r.name)}</b><span class="meta">${plural(r.pages, 'page')} · ${size(r.size)} · ${ago(r.at)}</span></span>
+      <button class="ibtn del" data-del aria-label="Forget ${escapeHtml(r.name)}">${icon('x')}</button></div>`).join('') : '<p class="empty">Recent files are off. Turn on Remember to keep the PDFs you open on this device.</p>';
+  $$('#recentList .rfile').forEach(el => {
+    const open = () => recentOpen(el.dataset.id);
+    el.onclick = e => { if (!e.target.closest('[data-del]')) open(); };
+    el.onkeydown = e => { if (e.key === 'Enter') open(); };
+    $('[data-del]', el).onclick = async () => { el.classList.add('leaving'); await idbDo('readwrite', s => s.delete(el.dataset.id)).catch(() => {}); setTimeout(recentLoad, 180); };
+  });
+  // the same list, short, under every empty drop box
+  $$('[data-src] .recent-row').forEach(x => x.remove());
+  if (!current && recentOn && recentList.length) $$('[data-src]').forEach(box => {
+    const row = document.createElement('div'); row.className = 'recent-row';
+    row.innerHTML = `<span class="meta">${icon('clock')}Recent</span>` + recentList.slice(0, 4).map(r => `<button class="chipbtn rchip" data-id="${escapeHtml(r.id)}" title="${escapeHtml(r.name)}">${escapeHtml(r.name)}</button>`).join('');
+    $$('[data-id]', row).forEach(b => b.onclick = () => recentOpen(b.dataset.id));
+    box.appendChild(row);
+  });
+}
+$('#recentOn').onchange = async () => {
+  recentOn = $('#recentOn').checked; try { localStorage.setItem('pdfkit-recent', recentOn ? 'on' : 'off'); } catch {}
+  if (!recentOn) await idbDo('readwrite', s => s.clear()).catch(() => {});   // turning it off forgets what was kept
+  recentLoad();
+};
+$('#recentClear').onclick = async () => { await idbDo('readwrite', s => s.clear()).catch(() => {}); recentLoad(); toast('Recent files cleared', 'Nothing is kept on this device now.'); };
+
+/* ---------- BATCH: one action, many files ---------- */
+const batch = { items: [] };
+batch.render = fileList($('#batchList'), batch.items, it => it.state || size(it.file.size), () => {
+  const n = batch.items.length;
+  $('#batchGo').disabled = !n || batch.running; $('#batchClear').hidden = !n || batch.running;
+  $('[data-drop=batch]').classList.toggle('compact', n > 0);
+  $('[data-drop=batch] strong').textContent = n ? 'Add more PDFs' : 'Drop all your PDFs here';
+  $('#batchSum').textContent = n ? `${plural(n, 'file')} · ${size(batch.items.reduce((t, x) => t + x.file.size, 0))}` : '';
+  $$('#batchList li').forEach((li, i) => { const st = batch.items[i] && batch.items[i].status; li.dataset.status = st || ''; });
+});
+makeDrop($('[data-drop=batch]'), { multiple: true, accept: 'application/pdf,.pdf', title: 'Drop all your PDFs here', sub: 'As many as you like. Each one gets the same treatment.', onFiles: async list => {
+  const pdfs = list.filter(isPdf);
+  setStatus(view('batch'), pdfs.length < list.length ? `${plural(list.length - pdfs.length, 'file')} skipped because ${list.length - pdfs.length === 1 ? 'it is' : 'they are'} not PDF.` : '', pdfs.length < list.length ? 'err' : '');
+  const added = pdfs.map(f => ({ file: f, thumb: null })); batch.items.push(...added); batch.render();
+  for (const it of added) { try { const js = await loadJs(new Uint8Array(await it.file.arrayBuffer())); it.thumb = await renderPage(js, 1, 80); js.destroy(); } catch (e) { it.locked = e && e.name === 'PasswordException'; } batch.render(); }
+} });
+$('#batchClear').onclick = () => { batch.items.length = 0; batch.render(); setStatus(view('batch'), ''); };
+function batchActChanged() { const a = radio('batchAct'); $$('#batchOpts [data-ba]').forEach(el => { el.hidden = el.dataset.ba !== a; }); }
+$$('input[name=batchAct]').forEach(r => r.addEventListener('change', batchActChanged));
+$('#baWmOp').addEventListener('input', () => { $('#baWmOpL').textContent = $('#baWmOp').value + '%'; });
+const BATCH_SUFFIX = { compress: 'compressed', numbers: 'numbered', watermark: 'watermarked', protect: 'protected', rotate: 'rotated', clean: 'clean' };
+const BATCH = {
+  compress: (src, o) => compressPdf(src, o.level, false),
+  numbers: async (src, o) => { const d = await loadLib(src); const [v, h] = o.pos.split('-'); await stampNumbers(d, { v, h, fmt: o.fmt, start: 1, fs: 10, m: 24, skip: false }, d.getPageIndices(), d.getPageCount()); return d.save(); },
+  watermark: async (src, o) => { const d = await loadLib(src); await stampWatermark(d, { kind: 'text', text: o.text, fs: 64, ang: 45, hex: '#e5484d', opacity: o.op, tile: false, first: false }, d.getPageIndices()); return d.save(); },
+  protect: async (src, o) => { const C = await cryptLib(), d = await C.PDFDocument.load(src, { ignoreEncryption: true, updateMetadata: false });
+    d.encrypt({ userPassword: o.pw, ownerPassword: o.pw, permissions: { printing: 'highResolution', copying: true, modifying: true, annotating: true, fillingForms: true, contentAccessibility: true, documentAssembly: true } }); return d.save(); },
+  rotate: async (src, o) => { const d = await loadLib(src); d.getPages().forEach(pg => pg.setRotation(degrees(norm(pg.getRotation().angle + o.rot)))); return d.save(); },
+  clean: src => cleanPdf(src, new Set(['info', 'xmp', 'js', 'files', 'comments', 'piece'])),
+};
+$('#batchGo').onclick = () => busy(view('batch'), $('#batchGo'), async () => {
+  const p = view('batch'), act = radio('batchAct'), n = batch.items.length;
+  if (!n) throw new Error('Drop your PDFs in the box first.');
+  const o = { level: $('#baLevel').value, pos: $('#baNumPos').value, fmt: $('#baNumFmt').value, text: $('#baWmText').value.trim(), op: +$('#baWmOp').value / 100, pw: $('#baPw').value, rot: +radio('baRot') };
+  if (act === 'watermark' && !o.text) { $('#baWmText').focus(); throw new Error('Type the watermark text first.'); }
+  if (act === 'protect' && o.pw.length < 6) { $('#baPw').focus(); throw new Error('Use a password of at least 6 characters.'); }
+  if (act === 'protect' && o.pw !== $('#baPw2').value) { $('#baPw2').focus(); throw new Error('The two passwords are different.'); }
+  batch.running = true; const out = [], used = new Set(); let failed = 0;
+  batch.items.forEach(it => { it.state = 'Waiting'; it.status = 'wait'; }); batch.render();
+  for (let i = 0; i < n; i++) {
+    const it = batch.items[i];
+    it.state = 'Working…'; it.status = 'work'; batch.render(); setProgress(p, `File ${i + 1} of ${n}: ${it.file.name}`, i / n); await nextFrame();
+    try {
+      if (it.locked) throw new Error('it is locked with a password');
+      const src = new Uint8Array(await it.file.arrayBuffer()), res = await BATCH[act](src, o);
+      let name = `${base(it.file.name)}-${BATCH_SUFFIX[act]}.pdf`; for (let k = 2; used.has(name.toLowerCase()); k++) name = `${base(it.file.name)}-${BATCH_SUFFIX[act]}-${k}.pdf`;
+      used.add(name.toLowerCase()); out.push({ name, bytes: res });
+      it.state = `Done · ${size(src.length)} → ${size(res.length)}`; it.status = 'done';
+    } catch (e) { console.warn('batch', it.file.name, e); it.state = `Not done: ${e.message.replace(/\.$/, '')}`; it.status = 'fail'; failed++; }
+    batch.render();
+  }
+  batch.running = false; batch.render();
+  if (!out.length) throw new Error('None of the files could be done. See the reason next to each file.');
+  const note = () => setStatus(p, failed ? `${plural(failed, 'file')} could not be done: the reason is next to ${failed === 1 ? 'it' : 'each one'}. The others are saved.` : '', failed ? 'err' : '');
+  if (out.length === 1) { note(); await download(out[0].bytes, out[0].name); return; }
+  setProgress(p, 'Packing the zip…', .97);
+  const zip = new JSZip(); out.forEach(f => zip.file(f.name, f.bytes));
+  const blob = await zip.generateAsync({ type: 'blob' });
+  note();
+  await download(blob, `pdfs-${BATCH_SUFFIX[act]}.zip`, 'application/zip', sn => toast(`Saved ${sn}`, `${plural(out.length, 'PDF')} · ${size(blob.size)}`));
+});
+batchActChanged();
+
+/* ---------- INSTALL AS AN APP, AND OFFLINE (a service worker keeps a copy of the app) ---------- */
+let installEvt = null;
+const showInstall = on => $$('[data-install]').forEach(b => { b.hidden = !on; });
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; showInstall(true); });
+$$('[data-install]').forEach(b => b.onclick = async () => { if (!installEvt) return; installEvt.prompt(); const r = await installEvt.userChoice.catch(() => null); if (r && r.outcome === 'accepted') showInstall(false); installEvt = null; });
+window.addEventListener('appinstalled', () => { showInstall(false); toast('PDF Toolkit is installed', 'Open it from your desktop or home screen. It works offline too.'); });
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+  navigator.serviceWorker.register('sw.js').then(() => navigator.serviceWorker.ready).then(() => { $('#offlineNote').hidden = false; }).catch(e => console.warn('offline copy', e));
 }
 
 /* ---------- SIGN ----------
@@ -3362,33 +3590,32 @@ function countUp(el, to, suffix) {
   const step = now => { const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3); el.textContent = Math.round(to * e) + suffix; if (k < 1) requestAnimationFrame(step); };
   requestAnimationFrame(step);
 }
+// the shrinking itself, shared with Batch: Light re-saves compactly; the other levels redraw each page as a JPEG picture
+async function compressPdf(src, level, gray, prog = () => {}) {
+  if (level === 'light') { prog('Tidying the file…', .4); await nextFrame(); return (await loadLib(src, { updateMetadata: false })).save({ useObjectStreams: true }); }
+  const { dpi, q } = CMP[level], js = await loadJs(src), out = await PDFDocument.create();
+  try {
+    for (let i = 1; i <= js.numPages; i++) {
+      prog(`Shrinking page ${i} of ${js.numPages}`, (i - 1) / js.numPages); await nextFrame();
+      const page = await js.getPage(i), vp1 = page.getViewport({ scale: 1 }), vp = page.getViewport({ scale: dpi / 72 });
+      const c = document.createElement('canvas'); c.width = Math.ceil(vp.width); c.height = Math.ceil(vp.height);
+      const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+      await page.render({ canvasContext: ctx, viewport: vp }).promise;
+      if (gray) { const d = ctx.getImageData(0, 0, c.width, c.height), a = d.data; for (let k = 0; k < a.length; k += 4) a[k] = a[k + 1] = a[k + 2] = a[k] * .299 + a[k + 1] * .587 + a[k + 2] * .114; ctx.putImageData(d, 0, 0); }
+      const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', q));
+      const img = await out.embedJpg(new Uint8Array(await blob.arrayBuffer()));
+      out.addPage([vp1.width, vp1.height]).drawImage(img, { x: 0, y: 0, width: vp1.width, height: vp1.height });
+      page.cleanup();
+    }
+  } finally { js.destroy(); }
+  prog('Saving…', .97); await nextFrame();
+  return out.save();
+}
 $('#cmpGo').onclick = () => busy(view('compress'), $('#cmpGo'), async () => {
   const p = view('compress'); if (!needFile(p)) return;
   $('#cmpResult').innerHTML = '';
   const level = radio('cmpLevel'), gray = $('#cmpGray').checked, before = current.size, name = base(current.name) + '-compressed.pdf';
-  let bytes;
-  if (level === 'light') {
-    setProgress(p, 'Tidying the file…', .4); await nextFrame();
-    bytes = await (await loadLib(current.bytes, { updateMetadata: false })).save({ useObjectStreams: true });
-  } else {
-    const { dpi, q } = CMP[level], js = await loadJs(current.bytes), out = await PDFDocument.create();
-    try {
-      for (let i = 1; i <= js.numPages; i++) {
-        setProgress(p, `Shrinking page ${i} of ${js.numPages}`, (i - 1) / js.numPages); await nextFrame();
-        const page = await js.getPage(i), vp1 = page.getViewport({ scale: 1 }), vp = page.getViewport({ scale: dpi / 72 });
-        const c = document.createElement('canvas'); c.width = Math.ceil(vp.width); c.height = Math.ceil(vp.height);
-        const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
-        await page.render({ canvasContext: ctx, viewport: vp }).promise;
-        if (gray) { const d = ctx.getImageData(0, 0, c.width, c.height), a = d.data; for (let k = 0; k < a.length; k += 4) a[k] = a[k + 1] = a[k + 2] = a[k] * .299 + a[k + 1] * .587 + a[k + 2] * .114; ctx.putImageData(d, 0, 0); }
-        const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', q));
-        const img = await out.embedJpg(new Uint8Array(await blob.arrayBuffer()));
-        out.addPage([vp1.width, vp1.height]).drawImage(img, { x: 0, y: 0, width: vp1.width, height: vp1.height });
-        page.cleanup();
-      }
-    } finally { js.destroy(); }
-    setProgress(p, 'Saving…', .97); await nextFrame();
-    bytes = await out.save();
-  }
+  const bytes = await compressPdf(current.bytes, level, gray, (m, f) => setProgress(p, m, f));
   setStatus(p, '');
   const after = bytes.length, smaller = after < before * 0.97, pct = Math.round((1 - after / before) * 100), box = $('#cmpResult');
   box.innerHTML = `<div class="result"><div><div class="big${smaller ? '' : ' flat'}"></div><p class="sub"></p>
@@ -3468,6 +3695,7 @@ const TOOLS = [
   ['header-footer', 'header', 'Header & footer', 'Add a title, date or page numbers to every page.'],
   ['redact', 'redact', 'Redact', 'Black out private details so they are gone for good.'],
   ['compress', 'shrink', 'Compress', 'Shrink a PDF so it is easy to email and upload.'],
+  ['batch', 'batch', 'Batch (many files)', 'Compress, number, watermark or lock many PDFs at once.'],
   ['protect', 'lock', 'Password protect', 'Lock a PDF so it only opens with your password.'],
   ['unlock', 'unlock', 'Remove password', 'Make an unlocked copy of a PDF you can open.'],
   ['clean', 'broom', 'Remove hidden data', 'Strip author names, attachments and comments before sharing.'],
@@ -3482,7 +3710,7 @@ const TOOLS = [
   ['pdf-to-images', 'toimg', 'PDF to images', 'Save pages as sharp JPG or PNG pictures.'],
 ];
 // everyday words people type for each tool, so the search finds it
-const KEYS = { merge: 'combine join together add append', 'images-to-pdf': 'photo picture jpg png scan convert', organize: 'reorder move rotate delete remove pages sort arrange',
+const KEYS = { batch: 'many multiple bulk all files at once several', merge: 'combine join together add append', 'images-to-pdf': 'photo picture jpg png scan convert', organize: 'reorder move rotate delete remove pages sort arrange',
   split: 'separate cut divide extract pages', crop: 'trim margins resize paper a4 letter size', bookmarks: 'outline contents chapters navigation', compare: 'difference diff changes versions',
   sign: 'signature initials date', 'fill-forms': 'form fields fill in', annotate: 'comment note highlight draw arrow markup text', 'header-footer': 'header footer title date top bottom',
   'page-numbers': 'number numbering', watermark: 'stamp logo draft confidential', redact: 'black out hide censor private remove text', info: 'title author metadata properties',
@@ -3543,7 +3771,7 @@ $('.asksave').hidden = !canPickFolder;
 $('#askWhere').checked = askWhere;
 $('#askWhere').onchange = () => { askWhere = $('#askWhere').checked; try { localStorage.setItem('pdfkit-ask', askWhere ? 'yes' : 'no'); } catch {} };
 
-merge.render(); imgs.render(); renderSources(); paintThemeButtons(); updateSigButtons(); cmpLevelChanged(); route();
+merge.render(); imgs.render(); renderSources(); paintThemeButtons(); updateSigButtons(); cmpLevelChanged(); route(); recentLoad();
 </script>
 </body>
 </html>
