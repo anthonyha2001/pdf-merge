@@ -266,13 +266,22 @@
 
 <input type="file" id="singlePicker" accept="application/pdf,.pdf" hidden>
 
-<script src="lib/pdf-lib.min.js"></script>
-<script src="lib/pdf.min.js"></script>
-<script src="lib/pdf.worker.min.js"></script>
-<script src="lib/jszip.min.js"></script>
+<!-- the libraries: from the CDN when online (works on any host, e.g. Vercel), else from the lib/ folder next to this page -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script>window.PDFLib || document.write('<script src="lib/pdf-lib.min.js"><\/script>');</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>window.pdfjsLib || document.write('<script src="lib/pdf.min.js"><\/script>');</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<script>window.pdfjsWorker || document.write('<script src="lib/pdf.worker.min.js"><\/script>');</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>window.JSZip || document.write('<script src="lib/jszip.min.js"><\/script>');</script>
 <script>
+if (!window.PDFLib || !window.pdfjsLib || !window.JSZip) {
+  document.body.insertAdjacentHTML('afterbegin', '<div style="background:#c0392b;color:#fff;padding:14px 18px;font-weight:600">The PDF tools could not load. Check your internet connection, or put the lib folder next to index.html, then reload the page.</div>');
+  throw new Error('PDF libraries missing');
+}
 const { PDFDocument, degrees, rgb, StandardFonts } = PDFLib;
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'lib/pdf.worker.min.js';
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'lib/pdf.worker.min.js';   // not fetched: the worker script above is already on the page
 
 /* ---------- helpers ---------- */
 const $ = (s, r = document) => r.querySelector(s);
