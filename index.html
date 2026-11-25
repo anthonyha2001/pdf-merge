@@ -8,7 +8,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23e5484d'/%3E%3Cpath d='M10 7h9l5 5v13H10z' fill='white'/%3E%3Cpath d='M19 7v5h5' fill='%23f3b0b2'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Caveat:wght@600&display=swap">
 <script>try { const t = localStorage.getItem('pdfkit-theme'); if (t) document.documentElement.dataset.theme = t; } catch {}</script>
 <style>
   /* Layout: a fixed side rail of tools (a top tab strip on phones), one tool view at a time on the right. */
@@ -47,7 +47,7 @@
 
   /* ---------- shell ---------- */
   .app { display: grid; grid-template-columns: 264px minmax(0, 1fr); min-height: 100vh; }
-  .rail { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 20px; padding: 22px 14px 18px;
+  .rail { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 14px; padding: 20px 14px 16px;
     background: var(--surface); border-right: 1px solid var(--line); }
   .brand { display: flex; align-items: center; gap: 11px; padding: 2px 10px; text-decoration: none; color: var(--ink); border-radius: 10px; }
   .logo { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(145deg, var(--accent), var(--accent-2)); display: grid; place-items: center;
@@ -57,9 +57,9 @@
   .brand b { font-size: 16px; letter-spacing: -.01em; }
   .brand small { display: block; font-size: 12px; color: var(--muted); font-weight: 400; margin-top: -2px; }
   .nav { position: relative; display: flex; flex-direction: column; gap: 2px; flex: 1; overflow-y: auto; }
-  .nav .group { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin: 14px 12px 6px; }
+  .nav .group { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin: 10px 12px 3px; }
   .nav .group:first-of-type { margin-top: 4px; }
-  .nav a { position: relative; z-index: 1; display: flex; align-items: center; gap: 11px; padding: 9px 12px; border-radius: 10px; color: var(--muted);
+  .nav a { position: relative; z-index: 1; display: flex; align-items: center; gap: 11px; padding: 7px 12px; border-radius: 10px; color: var(--muted);
     text-decoration: none; font-weight: 500; transition: color .2s; white-space: nowrap; }
   .nav a:hover { color: var(--ink); }
   .nav a:hover svg { transform: translateX(1px) scale(1.08); }
@@ -276,6 +276,115 @@
 
   .empty { margin: 0; padding: 6px; text-align: center; color: var(--muted); font-size: 14px; }
 
+  /* ---------- live preview ---------- */
+  .with-preview { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; align-items: start; }
+  .with-preview .form { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  .preview { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 10px; padding: 12px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-1); }
+  .pv-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .pv-head .lbl { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 600; color: var(--muted); padding-left: 4px; }
+  .pv-head .lbl svg { width: 15px; height: 15px; color: var(--accent); }
+  .pv-head .lbl i { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 0 var(--ok); animation: live 2s infinite; }
+  @keyframes live { 70% { box-shadow: 0 0 0 6px transparent; } }
+  .pager { display: flex; align-items: center; justify-content: center; gap: 4px; }
+  .pager .meta { min-width: 92px; text-align: center; }
+  .pv-stage { position: relative; aspect-ratio: 3 / 4; border-radius: 10px; background: var(--surface-2); overflow: hidden; display: grid; place-items: center; }
+  .pv-stage canvas { position: absolute; inset: 0; margin: auto; max-width: 90%; max-height: 92%; border-radius: 2px; background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,.18), 0 10px 24px -10px rgba(0,0,0,.35); transition: opacity .25s, filter .25s; }
+  .pv-stage.loading canvas { opacity: .6; filter: blur(.6px); }
+  .pv-stage .pv-empty { font-size: 13px; color: var(--muted); padding: 20px; text-align: center; }
+
+  /* ---------- sign ---------- */
+  .signbar .btn svg.i { color: var(--accent); }
+  .btn.ghosty { background: transparent; box-shadow: none; border-color: transparent; color: var(--muted); }
+  .btn.ghosty:hover { border-color: var(--line); color: var(--ink); background: var(--surface); }
+  .btn.ghosty svg.i { color: inherit; }
+  .textrow { display: flex; gap: 10px; animation: rise .3s var(--ease) both; }
+  .textrow input { flex: 1; }
+  #signWork { display: flex; flex-direction: column; gap: 14px; }
+  .viewer { display: flex; flex-direction: column; gap: 12px; padding: 14px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-1); }
+  .sheet-wrap { display: flex; justify-content: center; padding: 20px; border-radius: 10px; background: var(--surface-2); overflow: hidden; }
+  .sheet { position: relative; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.15), 0 14px 34px -14px rgba(0,0,0,.35); touch-action: none; user-select: none; -webkit-user-select: none; max-width: 100%; }
+  .sheet canvas { display: block; width: 100%; height: auto; }
+  .sheet.swap canvas { animation: rise .35s var(--ease) both; }
+  .item { position: absolute; cursor: grab; border: 1.5px dashed transparent; border-radius: 5px; touch-action: none; transition: border-color .2s, background .2s; }
+  .item.new { animation: drop .45s var(--spring) both; }
+  @keyframes drop { from { opacity: 0; transform: scale(.7) translateY(-10px); } }
+  .item.moving { cursor: grabbing; }
+  .item img { display: block; width: 100%; height: auto; pointer-events: none; }
+  .item:hover { border-color: color-mix(in srgb, var(--accent) 55%, transparent); }
+  .item.sel { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 6%, transparent); }
+  .item .h { position: absolute; right: -8px; bottom: -8px; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); border: 2.5px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.3);
+    cursor: nwse-resize; opacity: 0; transform: scale(.6); transition: opacity .2s, transform .25s var(--spring); }
+  .item .x { position: absolute; top: -13px; right: -13px; width: 24px; height: 24px; border-radius: 50%; border: 0; padding: 0; background: #16181d; color: #fff; display: grid; place-items: center;
+    cursor: pointer; opacity: 0; transform: scale(.6); transition: opacity .2s, transform .25s var(--spring); box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+  .item .x svg { width: 13px; height: 13px; stroke-width: 2.4; }
+  .item.sel .h, .item.sel .x, .item:hover .h, .item:hover .x { opacity: 1; transform: none; }
+  .hint.center { text-align: center; margin: 0; }
+
+  dialog { border: 0; padding: 0; background: transparent; width: min(640px, calc(100vw - 24px)); max-width: none; color: var(--ink); }
+  dialog::backdrop { background: rgba(8,10,14,.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); animation: fadeIn .25s both; }
+  @keyframes fadeIn { from { opacity: 0; } }
+  .dlg { display: flex; flex-direction: column; gap: 16px; padding: 20px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-3); animation: dlgIn .4s var(--spring) both; }
+  @keyframes dlgIn { from { opacity: 0; transform: translateY(14px) scale(.97); } }
+  .dlg-head { display: flex; align-items: center; justify-content: space-between; }
+  .dlg-head h2 { margin: 0; font-size: 19px; letter-spacing: -.015em; }
+  .sig-pane { display: flex; flex-direction: column; gap: 12px; }
+  .pad { position: relative; height: 210px; border-radius: 12px; background: #fff; border: 1px solid var(--line-2); overflow: hidden; }
+  .pad canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+  .pad.typed canvas { cursor: default; }
+  .pad.typed { height: 150px; }
+  .pad .baseline { position: absolute; left: 28px; right: 28px; bottom: 46px; border-top: 1.5px solid #cfd3db; padding-top: 6px; font-size: 12px; color: #8a90a0; pointer-events: none; }
+  #sigDlg .drop { padding: 24px 16px; }
+  .dlg-foot { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .inks { display: flex; gap: 8px; padding-right: 4px; }
+  .inks label { position: relative; cursor: pointer; }
+  .inks input { position: absolute; opacity: 0; }
+  .inks i { display: block; width: 24px; height: 24px; border-radius: 50%; box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px transparent; transition: box-shadow .2s, transform .2s var(--spring); }
+  .inks label:hover i { transform: scale(1.1); }
+  .inks input:checked + i { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--ink); }
+  .inks input:focus-visible + i { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .switch.plain { padding-bottom: 0; align-self: center; }
+
+  /* ---------- fill forms ---------- */
+  #formFields { display: flex; flex-direction: column; gap: 16px; }
+  .fgroup { display: flex; flex-direction: column; gap: 8px; animation: rise .4s var(--ease) both; }
+  .fgroup h3 { margin: 4px 0 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  textarea { width: 100%; min-height: 84px; resize: vertical; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); font: 14.5px var(--font); }
+  textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); background: var(--surface); }
+  select[multiple] { background-image: none; padding-right: 12px; min-height: 90px; }
+  .form .switch.field { align-self: end; }
+  .empty-state { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; padding: 34px 20px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); animation: pop .35s var(--ease) both; }
+  .empty-state b { font-size: 16px; }
+  .empty-state span { color: var(--muted); max-width: 46ch; }
+
+  /* ---------- compress ---------- */
+  .levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .level { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 16px 44px 16px 16px; border-radius: var(--r); background: var(--surface); border: 1.5px solid var(--line);
+    cursor: pointer; box-shadow: var(--shadow-1); transition: border-color .2s, box-shadow .25s, transform .25s var(--ease); }
+  .level:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); }
+  .level input { position: absolute; opacity: 0; }
+  .level b { font-size: 15px; }
+  .level span { font-size: 13.5px; color: var(--muted); line-height: 1.45; }
+  .level::after { content: ""; position: absolute; top: 16px; right: 16px; width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--line-2); transition: background .2s, border-color .2s, box-shadow .2s; }
+  .level:has(input:checked) { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent); }
+  .level:has(input:checked)::after { background: var(--accent); border-color: var(--accent); box-shadow: inset 0 0 0 3.5px var(--surface); }
+  .level:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .result { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 22px; align-items: center; padding: 20px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-2); animation: pop .4s var(--ease) both; }
+  .result .big { font-size: 34px; font-weight: 650; letter-spacing: -.03em; line-height: 1.1; color: var(--ok); }
+  .result .big.flat { color: var(--muted); }
+  .result .sub { color: var(--muted); font-size: 14px; margin: 4px 0 14px; }
+  .bars { display: flex; flex-direction: column; gap: 9px; }
+  .barrow { display: grid; grid-template-columns: 56px minmax(0, 1fr) 74px; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
+  .barrow .meta { text-align: right; }
+  .track { height: 10px; border-radius: 99px; background: var(--surface-2); border: 1px solid var(--line); overflow: hidden; }
+  .track i { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--line-2); transition: width 1.1s var(--ease); }
+  .track.after i { background: linear-gradient(90deg, var(--ok), color-mix(in srgb, var(--ok) 70%, #fff)); }
+  .result .acts { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .result .pthumb { width: 116px; aspect-ratio: 3 / 4; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--line); display: grid; place-items: center; overflow: hidden; position: relative; }
+  .result .pthumb canvas { position: absolute; inset: 0; margin: auto; max-width: 88%; max-height: 90%; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+  @media (max-width: 1100px) { .with-preview { grid-template-columns: minmax(0, 1fr); } .preview { position: static; max-width: 420px; width: 100%; margin: 0 auto; } }
+  @media (max-width: 680px) { .levels { grid-template-columns: minmax(0, 1fr); } .result { grid-template-columns: minmax(0, 1fr); } .result .pthumb { display: none; } }
+
   /* ---------- phones ---------- */
   @media (max-width: 860px) {
     .app { grid-template-columns: minmax(0, 1fr); }
@@ -295,7 +404,9 @@
     .head h1 { font-size: 23px; }
     .tile { width: 42px; height: 42px; }
   }
-  .theme-mini { display: none !important; }
+  .rail-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .rail-foot .theme { display: none; }
+  .rail-foot:not(:has(.asksave:not([hidden]))) { display: none; }
   @media (max-width: 520px) {
     .tools .up-down { display: none; }
     .namefield { max-width: none; }
@@ -333,6 +444,15 @@
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
   <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></symbol>
   <symbol id="i-swap" viewBox="0 0 24 24"><path d="m16 3 4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16"/></symbol>
+  <symbol id="i-shrink" viewBox="0 0 24 24"><path d="m15 15 6 6m-6-6v4.8m0-4.8h4.8"/><path d="M9 19.8V15m0 0H4.2M9 15l-6 6"/><path d="M15 4.2V9m0 0h4.8M15 9l6-6"/><path d="M9 4.2V9m0 0H4.2M9 9 3 3"/></symbol>
+  <symbol id="i-sign" viewBox="0 0 24 24"><path d="m21 17-2.16-1.87a.5.5 0 0 0-.84.37v.5a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1c0-2.55-4-3.97-8.5-4a1 1 0 0 0 0 5c4.15 0 4.75-11.3 5.71-13.5a2.5 2.5 0 1 1 3.31 3.28"/><path d="M3 21h18"/></symbol>
+  <symbol id="i-form" viewBox="0 0 24 24"><rect x="3" y="4" width="6" height="6" rx="1"/><path d="m3 17 2 2 4-4M13 6h8M13 12h8M13 18h8"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-type" viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.38 3.62a2.12 2.12 0 1 1 3 3L7.37 18.64a2 2 0 0 1-.86.5l-2.87.84a.5.5 0 0 1-.62-.62l.84-2.87a2 2 0 0 1 .5-.86z"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/></symbol>
 </svg>
 
 <div class="app">
@@ -353,15 +473,18 @@
       <div class="group">Pages</div>
       <a href="#organize" data-view="organize"><svg class="i"><use href="#i-grid"/></svg>Organize pages</a>
       <a href="#split" data-view="split"><svg class="i"><use href="#i-split"/></svg>Split / extract</a>
+      <div class="group">Sign and fill</div>
+      <a href="#sign" data-view="sign"><svg class="i"><use href="#i-sign"/></svg>Sign</a>
+      <a href="#fill-forms" data-view="fill-forms"><svg class="i"><use href="#i-form"/></svg>Fill forms</a>
       <div class="group">Edit</div>
       <a href="#page-numbers" data-view="page-numbers"><svg class="i"><use href="#i-hash"/></svg>Page numbers</a>
       <a href="#watermark" data-view="watermark"><svg class="i"><use href="#i-stamp"/></svg>Watermark</a>
       <a href="#info" data-view="info"><svg class="i"><use href="#i-info"/></svg>Document info</a>
-      <div class="group">Convert</div>
+      <div class="group">Shrink and convert</div>
+      <a href="#compress" data-view="compress"><svg class="i"><use href="#i-shrink"/></svg>Compress</a>
       <a href="#pdf-to-images" data-view="pdf-to-images"><svg class="i"><use href="#i-toimg"/></svg>PDF to images</a>
     </nav>
     <div class="rail-foot">
-      <div class="private"><svg class="i"><use href="#i-shield"/></svg><span>Your files are processed in this browser and are never uploaded.</span></div>
       <label class="switch asksave" hidden title="Off: files go straight to your Downloads folder"><input type="checkbox" id="askWhere">Ask where to save</label>
       <button class="theme" data-theme-toggle><svg class="i"><use href="#i-moon"/></svg><span>Dark mode</span></button>
     </div>
@@ -448,10 +571,75 @@
       <div class="status"></div>
     </section>
 
+    <!-- SIGN -->
+    <section class="view" id="view-sign" hidden>
+      <div class="head"><span class="tile"><svg class="i"><use href="#i-sign"/></svg></span><div><h1>Sign</h1><p>Draw, type or upload your signature, then drag it where it belongs.</p></div></div>
+      <div data-src></div>
+      <div id="signWork" hidden>
+        <div class="bar signbar">
+          <button class="btn" id="sigPlace"><svg class="i"><use href="#i-sign"/></svg>Add signature</button>
+          <button class="btn small ghosty" id="sigChange" hidden><svg class="i"><use href="#i-pen"/></svg>New signature</button>
+          <button class="btn" id="sigDate"><svg class="i"><use href="#i-cal"/></svg>Add date</button>
+          <button class="btn" id="sigTextBtn"><svg class="i"><use href="#i-type"/></svg>Add text</button>
+          <span class="grow"></span>
+          <span class="meta" id="sigCount"></span>
+          <button class="btn primary" id="signGo">Save signed PDF</button>
+        </div>
+        <div class="textrow" id="sigTextRow" hidden>
+          <input type="text" id="sigText" placeholder="Type the text to place, e.g. your name or initials">
+          <button class="btn primary small" id="sigTextAdd">Place text</button>
+        </div>
+        <div class="viewer">
+          <div class="pager">
+            <button class="ibtn" id="sigPrev" aria-label="Previous page"><svg class="i"><use href="#i-left"/></svg></button>
+            <span class="meta" id="sigPageLabel"></span>
+            <button class="ibtn" id="sigNext" aria-label="Next page"><svg class="i"><use href="#i-right"/></svg></button>
+          </div>
+          <div class="sheet-wrap"><div class="sheet" id="sheet"></div></div>
+          <p class="hint center">Drag to move. Drag the corner to resize. Press Delete to remove the selected item.</p>
+        </div>
+      </div>
+      <div class="status"></div>
+    </section>
+
+    <!-- FILL FORMS -->
+    <section class="view" id="view-fill-forms" hidden>
+      <div class="head"><span class="tile"><svg class="i"><use href="#i-form"/></svg></span><div><h1>Fill forms</h1><p>Fill in the boxes of a fillable PDF form, then save it.</p></div></div>
+      <div data-src></div>
+      <div id="formFields"></div>
+      <div class="bar" id="formBar" hidden>
+        <button class="btn" id="formClear">Clear all answers</button>
+        <span class="grow"></span>
+        <label class="switch plain" title="Turns the answers into normal page content"><input type="checkbox" id="formFlatten">Lock the answers</label>
+        <button class="btn primary" id="formGo">Save filled PDF</button>
+      </div>
+      <div class="status"></div>
+    </section>
+
+    <!-- COMPRESS -->
+    <section class="view" id="view-compress" hidden>
+      <div class="head"><span class="tile"><svg class="i"><use href="#i-shrink"/></svg></span><div><h1>Compress</h1><p>Make a PDF smaller so it is easier to email and upload.</p></div></div>
+      <div data-src></div>
+      <div class="levels" id="levels">
+        <label class="level"><input type="radio" name="cmpLevel" value="light"><b>Light</b><span>Tidies the file. Text stays selectable. Small savings.</span></label>
+        <label class="level"><input type="radio" name="cmpLevel" value="medium" checked><b>Recommended</b><span>Good quality, much smaller. Best for scans and photos.</span></label>
+        <label class="level"><input type="radio" name="cmpLevel" value="strong"><b>Strong</b><span>Smallest file. Fine for reading on screen.</span></label>
+      </div>
+      <div class="bar">
+        <label class="switch plain"><input type="checkbox" id="cmpGray">Black and white</label>
+        <span class="grow"></span>
+        <button class="btn primary" id="cmpGo">Compress PDF</button>
+      </div>
+      <p class="hint" id="cmpNote">Recommended and Strong turn each page into a picture, so text can no longer be selected or searched.</p>
+      <div id="cmpResult"></div>
+      <div class="status"></div>
+    </section>
+
     <!-- PAGE NUMBERS -->
     <section class="view" id="view-page-numbers" hidden>
       <div class="head"><span class="tile"><svg class="i"><use href="#i-hash"/></svg></span><div><h1>Page numbers</h1><p>Stamp a number on every page.</p></div></div>
       <div data-src></div>
+      <div class="with-preview">
       <div class="form">
         <label>Position
           <select id="numPos">
@@ -467,6 +655,8 @@
         <label>Distance from edge (pt) <input type="number" id="numMargin" value="24" min="0" max="200"></label>
         <label class="switch"><input type="checkbox" id="numSkip">Skip the cover page</label>
       </div>
+      <div class="preview" data-preview="numbers"></div>
+      </div>
       <div class="bar"><span class="grow"></span><button class="btn primary" id="numGo">Add page numbers</button></div>
       <div class="status"></div>
     </section>
@@ -475,6 +665,7 @@
     <section class="view" id="view-watermark" hidden>
       <div class="head"><span class="tile"><svg class="i"><use href="#i-stamp"/></svg></span><div><h1>Watermark</h1><p>Write text such as CONFIDENTIAL or DRAFT across your pages.</p></div></div>
       <div data-src></div>
+      <div class="with-preview">
       <div class="form">
         <label class="wide">Text <input type="text" id="wmText" value="CONFIDENTIAL"></label>
         <label>Text size <input type="number" id="wmSize" value="64" min="8" max="300"></label>
@@ -485,6 +676,8 @@
         <label><span class="row">Opacity <span class="meta" id="wmOpLabel">25%</span></span><input type="range" id="wmOpacity" min="5" max="100" value="25"></label>
         <label>Pages <select id="wmPages"><option value="all">All pages</option><option value="first">First page only</option></select></label>
         <label class="switch"><input type="checkbox" id="wmTile">Repeat across the page</label>
+      </div>
+      <div class="preview" data-preview="watermark"></div>
       </div>
       <div class="bar"><span class="grow"></span><button class="btn primary" id="wmGo">Add watermark</button></div>
       <div class="status"></div>
@@ -527,6 +720,40 @@
 </div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <input type="file" id="singlePicker" accept="application/pdf,.pdf" hidden>
+
+<dialog id="sigDlg" aria-labelledby="sigDlgTitle">
+  <div class="dlg">
+    <div class="dlg-head"><h2 id="sigDlgTitle">Create your signature</h2><button class="ibtn" id="sigClose" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="seg" id="sigTabs">
+      <label><input type="radio" name="sigTab" value="draw" checked><span>Draw</span></label>
+      <label><input type="radio" name="sigTab" value="type"><span>Type</span></label>
+      <label><input type="radio" name="sigTab" value="upload"><span>Upload</span></label>
+    </div>
+    <div class="sig-pane" data-pane="draw">
+      <div class="pad"><canvas id="sigPad"></canvas><span class="baseline">Sign above the line</span></div>
+    </div>
+    <div class="sig-pane" data-pane="type" hidden>
+      <input type="text" id="sigTyped" placeholder="Type your name" maxlength="40">
+      <div class="pad typed"><canvas id="sigTypedCanvas"></canvas></div>
+    </div>
+    <div class="sig-pane" data-pane="upload" hidden>
+      <div class="drop" id="sigUpDrop"></div>
+      <div class="pad typed" id="sigUpPrev" hidden><canvas id="sigUpCanvas"></canvas></div>
+      <label class="switch plain"><input type="checkbox" id="sigUpClean" checked>Remove the white background</label>
+    </div>
+    <div class="dlg-foot">
+      <div class="inks" id="inks" role="radiogroup" aria-label="Ink color">
+        <label title="Black"><input type="radio" name="ink" value="#111318" checked><i style="background:#111318"></i></label>
+        <label title="Blue"><input type="radio" name="ink" value="#1d4ed8"><i style="background:#1d4ed8"></i></label>
+        <label title="Red"><input type="radio" name="ink" value="#c81e1e"><i style="background:#c81e1e"></i></label>
+      </div>
+      <button class="btn small" id="sigClear">Clear</button>
+      <span class="grow"></span>
+      <label class="switch plain"><input type="checkbox" id="sigRemember" checked>Remember on this device</label>
+      <button class="btn primary" id="sigUse">Use signature</button>
+    </div>
+  </div>
+</dialog>
 
 <!-- the libraries: from the CDN when online, else from the lib/ folder next to this page -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
@@ -804,7 +1031,16 @@ async function setCurrent(name, bytes) {
   js.destroy();
   current = c; renderSources();
   $$('.view').forEach(p => { if ($('[data-src]', p)) setStatus(p, ''); });
-  fillInfo(); if (active === 'organize') buildOrganize();
+  fillInfo(); refreshActive();
+}
+// the open tool follows the working file (open, change or close)
+function refreshActive() {
+  $('#cmpResult').innerHTML = '';
+  if (active === 'organize') buildOrganize();
+  if (active === 'sign') buildSign();
+  if (active === 'fill-forms') buildForms();
+  if (active === 'page-numbers') numPreview.draw();
+  if (active === 'watermark') wmPreview.draw();
 }
 async function useResult(bytes, name) {
   await setCurrent(name, new Uint8Array(bytes));
@@ -825,13 +1061,14 @@ function renderSources() {
       $('.name', d).textContent = current.name; $('.name', d).title = current.name;
       const t = document.createElement('canvas'); t.width = current.thumb.width; t.height = current.thumb.height; t.getContext('2d').drawImage(current.thumb, 0, 0); $('.pthumb', d).appendChild(t);
       $('[data-change]', d).onclick = () => singlePicker.click();
-      $('[data-close]', d).onclick = () => { current = null; org.for = null; renderSources(); };
+      $('[data-close]', d).onclick = () => { current = null; org.for = null; renderSources(); refreshActive(); };
       d.addEventListener('dragover', e => e.preventDefault());
       d.addEventListener('drop', e => { e.preventDefault(); e.dataTransfer.files[0] && openSingle(e.dataTransfer.files[0]); });
       box.appendChild(d);
     }
   });
   $('#orgBar').hidden = !current;
+  $('#signWork').hidden = !current;
   if (!current) $('#orgGrid').innerHTML = '';
 }
 function needFile(p) { if (!current) { setStatus(p, 'Open a PDF first: drop it in the box above or click it to choose one.', 'err'); return false; } return true; }
@@ -921,48 +1158,464 @@ $('#splitGo').onclick = () => busy(view('split'), $('#splitGo'), async () => {
 $$('input[name=splitMode]').forEach(r => r.onchange = () => { $('#splitRanges').disabled = radio('splitMode') === 'each'; if (radio('splitMode') !== 'each') $('#splitRanges').focus(); });
 $('#splitRanges').disabled = true;
 
+/* ---------- live preview (page numbers, watermark) ----------
+   The page shown is cut out of the real PDF and stamped by the same code that saves, so what you see is what you get. */
+let srcCache = { for: null, doc: null };
+async function srcDoc() { if (srcCache.for !== current) srcCache = { for: current, doc: await loadLib(current.bytes) }; return srcCache.doc; }
+function makePreview(name, viewId, apply) {
+  const box = $(`[data-preview=${name}]`);
+  box.innerHTML = `<div class="pv-head"><span class="lbl"><i></i>Live preview</span><div class="pager">
+    <button class="ibtn" data-prev aria-label="Previous page">${icon('left')}</button><span class="meta"></span>
+    <button class="ibtn" data-next aria-label="Next page">${icon('right')}</button></div></div><div class="pv-stage"></div>`;
+  const st = { page: 0, token: 0, timer: 0 }, stage = $('.pv-stage', box), label = $('.pager .meta', box);
+  async function draw() {
+    const t = ++st.token;
+    if (!current) { stage.innerHTML = '<span class="pv-empty">Open a PDF to see how it will look.</span>'; label.textContent = ''; $('[data-prev]', box).disabled = $('[data-next]', box).disabled = true; return; }
+    st.page = Math.max(0, Math.min(st.page, current.pages - 1));
+    label.textContent = `Page ${st.page + 1} of ${current.pages}`;
+    $('[data-prev]', box).disabled = st.page === 0; $('[data-next]', box).disabled = st.page >= current.pages - 1;
+    stage.classList.add('loading');
+    try {
+      const src = await srcDoc(), one = await PDFDocument.create();
+      const [pg] = await one.copyPages(src, [st.page]); one.addPage(pg);
+      try { await apply(one, [st.page], current.pages); } catch { /* incomplete settings: show the page as it is */ }
+      const js = await loadJs(await one.save());
+      if (t !== st.token) { js.destroy(); return; }
+      const c = await renderPage(js, 1, Math.min(1400, Math.round((stage.clientWidth || 280) * (devicePixelRatio || 1)))); js.destroy();
+      if (t !== st.token) return;
+      stage.innerHTML = ''; stage.appendChild(c);
+    } catch (e) { console.warn('preview', e); }
+    if (t === st.token) stage.classList.remove('loading');
+  }
+  const schedule = () => { clearTimeout(st.timer); st.timer = setTimeout(draw, 160); };
+  $('[data-prev]', box).onclick = () => { st.page--; draw(); };
+  $('[data-next]', box).onclick = () => { st.page++; draw(); };
+  ['input', 'change'].forEach(ev => view(viewId).addEventListener(ev, e => { if (!box.contains(e.target) && !e.target.closest('[data-src]')) schedule(); }));
+  return { draw: () => { if (active === viewId) draw(); } };
+}
+
 /* ---------- PAGE NUMBERS ---------- */
+function numOpts() {
+  const [v, h] = $('#numPos').value.split('-');
+  return { v, h, fmt: $('#numFmt').value, start: Math.round(+$('#numStart').value || 0), fs: Math.max(4, +$('#numSize').value || 10),
+    m: Math.max(0, +$('#numMargin').value || 0), skip: $('#numSkip').checked };
+}
+// orig: the page number in the whole PDF of each page of doc (the preview stamps one page cut out of it)
+async function stampNumbers(doc, o, orig, total) {
+  const font = await doc.embedFont(StandardFonts.Helvetica), last = o.start + total - (o.skip ? 1 : 0) - 1;
+  doc.getPages().forEach((pg, j) => {
+    const i = orig[j]; if (o.skip && i === 0) return;
+    const k = o.start + i - (o.skip ? 1 : 0);
+    const t = o.fmt === 'n' ? `${k}` : o.fmt === 'page' ? `Page ${k}` : o.fmt === 'of' ? `Page ${k} of ${last}` : `${k} / ${last}`;
+    const box = pg.getCropBox(), tw = font.widthOfTextAtSize(t, o.fs);
+    const x = box.x + (o.h === 'l' ? o.m : o.h === 'r' ? box.width - o.m - tw : (box.width - tw) / 2);
+    const y = box.y + (o.v === 'b' ? o.m : box.height - o.m - o.fs);
+    pg.drawText(t, { x, y, size: o.fs, font, color: rgb(0.15, 0.15, 0.15) });
+  });
+}
+const numPreview = makePreview('numbers', 'page-numbers', (doc, orig, total) => stampNumbers(doc, numOpts(), orig, total));
 $('#numGo').onclick = () => busy(view('page-numbers'), $('#numGo'), async () => {
   const p = view('page-numbers'); if (!needFile(p)) return;
-  const doc = await loadLib(current.bytes), font = await doc.embedFont(StandardFonts.Helvetica);
-  const [v, h] = $('#numPos').value.split('-'), fmt = $('#numFmt').value, start = Math.round(+$('#numStart').value || 0);
-  const fs = Math.max(4, +$('#numSize').value || 10), m = Math.max(0, +$('#numMargin').value || 0), skip = $('#numSkip').checked;
-  const pages = doc.getPages(), last = start + pages.length - (skip ? 1 : 0) - 1;
-  pages.forEach((pg, i) => {
-    if (skip && i === 0) return;
-    const k = start + i - (skip ? 1 : 0);
-    const t = fmt === 'n' ? `${k}` : fmt === 'page' ? `Page ${k}` : fmt === 'of' ? `Page ${k} of ${last}` : `${k} / ${last}`;
-    const box = pg.getCropBox(), tw = font.widthOfTextAtSize(t, fs);
-    const x = box.x + (h === 'l' ? m : h === 'r' ? box.width - m - tw : (box.width - tw) / 2);
-    const y = box.y + (v === 'b' ? m : box.height - m - fs);
-    pg.drawText(t, { x, y, size: fs, font, color: rgb(0.15, 0.15, 0.15) });
-  });
+  const doc = await loadLib(current.bytes);
+  await stampNumbers(doc, numOpts(), doc.getPageIndices(), doc.getPageCount());
   await saved(p, await doc.save(), base(current.name) + '-numbered.pdf');
 });
 
 /* ---------- WATERMARK ---------- */
 $('#wmOpacity').oninput = () => { $('#wmOpLabel').textContent = $('#wmOpacity').value + '%'; };
-$('#wmGo').onclick = () => busy(view('watermark'), $('#wmGo'), async () => {
-  const p = view('watermark'); if (!needFile(p)) return;
+function wmOpts() {
   const text = $('#wmText').value.trim(); if (!text) throw new Error('Type the watermark text first.');
-  const doc = await loadLib(current.bytes), font = await doc.embedFont(StandardFonts.HelveticaBold);
-  let safe = text; try { font.encodeText(text); } catch { safe = text.replace(/[^\x20-\x7E]/g, ''); if (!safe.trim()) throw new Error('The watermark can only use Latin letters, digits and common symbols.'); }
-  const fs = Math.max(6, +$('#wmSize').value || 64), ang = +radio('wmAngle'), rad = ang * Math.PI / 180;
-  const hex = $('#wmColor').value, color = rgb(parseInt(hex.slice(1, 3), 16) / 255, parseInt(hex.slice(3, 5), 16) / 255, parseInt(hex.slice(5, 7), 16) / 255);
-  const opacity = +$('#wmOpacity').value / 100, tile = $('#wmTile').checked;
-  const tw = font.widthOfTextAtSize(safe, fs), th = fs * 0.7;
+  return { text, fs: Math.max(6, +$('#wmSize').value || 64), ang: +radio('wmAngle'), hex: $('#wmColor').value,
+    opacity: +$('#wmOpacity').value / 100, tile: $('#wmTile').checked, first: $('#wmPages').value === 'first' };
+}
+async function stampWatermark(doc, o, orig) {
+  const font = await doc.embedFont(StandardFonts.HelveticaBold);
+  let safe = o.text; try { font.encodeText(o.text); } catch { safe = o.text.replace(/[^\x20-\x7E]/g, ''); if (!safe.trim()) throw new Error('The watermark can only use Latin letters, digits and common symbols.'); }
+  const rad = o.ang * Math.PI / 180, color = rgb(parseInt(o.hex.slice(1, 3), 16) / 255, parseInt(o.hex.slice(3, 5), 16) / 255, parseInt(o.hex.slice(5, 7), 16) / 255);
+  const tw = font.widthOfTextAtSize(safe, o.fs), th = o.fs * 0.7;
   // where the text starts so that its middle lands on (cx, cy) after rotating
   const at = (cx, cy) => ({ x: cx - (tw / 2) * Math.cos(rad) + (th / 2) * Math.sin(rad), y: cy - (tw / 2) * Math.sin(rad) - (th / 2) * Math.cos(rad) });
-  const pages = $('#wmPages').value === 'first' ? [doc.getPage(0)] : doc.getPages();
-  pages.forEach(pg => {
-    const box = pg.getCropBox(), opts = { size: fs, font, color, opacity, rotate: degrees(ang) };
-    if (!tile) { pg.drawText(safe, { ...opts, ...at(box.x + box.width / 2, box.y + box.height / 2) }); return; }
-    const sx = tw * 0.9 + fs * 2, sy = fs * 4;
+  doc.getPages().forEach((pg, j) => {
+    if (o.first && orig[j] !== 0) return;
+    const box = pg.getCropBox(), opts = { size: o.fs, font, color, opacity: o.opacity, rotate: degrees(o.ang) };
+    if (!o.tile) { pg.drawText(safe, { ...opts, ...at(box.x + box.width / 2, box.y + box.height / 2) }); return; }
+    const sx = tw * 0.9 + o.fs * 2, sy = o.fs * 4;
     for (let row = 0, cy = box.y - sy; cy < box.y + box.height + sy; cy += sy, row++)
       for (let cx = box.x - sx; cx < box.x + box.width + sx; cx += sx)
         pg.drawText(safe, { ...opts, ...at(cx + (row % 2) * sx / 2, cy) });
   });
+}
+const wmPreview = makePreview('watermark', 'watermark', (doc, orig) => stampWatermark(doc, wmOpts(), orig));
+$('#wmGo').onclick = () => busy(view('watermark'), $('#wmGo'), async () => {
+  const p = view('watermark'); if (!needFile(p)) return;
+  const o = wmOpts(), doc = await loadLib(current.bytes);
+  await stampWatermark(doc, o, doc.getPageIndices());
   await saved(p, await doc.save(), base(current.name) + '-watermarked.pdf');
+});
+
+/* ---------- SIGN ----------
+   Signatures, dates and text are pictures (transparent PNG) placed on the page; positions are kept as fractions of the page,
+   and turned into PDF points with the page's own viewport when saving (rotated pages included). */
+const sign = { items: [], page: 0, js: null, for: null, sel: null, sig: null };
+try { const s = JSON.parse(localStorage.getItem('pdfkit-sig') || 'null'); if (s && s.img) sign.sig = s; } catch {}
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+function trimCanvas(c, pad = 8) {
+  const ctx = c.getContext('2d'), w = c.width, h = c.height, d = ctx.getImageData(0, 0, w, h).data;
+  let x0 = w, y0 = h, x1 = -1, y1 = -1;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 10) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  if (x1 < 0) return null;
+  const o = document.createElement('canvas'); o.width = x1 - x0 + 1 + pad * 2; o.height = y1 - y0 + 1 + pad * 2;
+  o.getContext('2d').drawImage(c, x0, y0, x1 - x0 + 1, y1 - y0 + 1, pad, pad, x1 - x0 + 1, y1 - y0 + 1);
+  return o;
+}
+function textImage(text, font, color) {
+  const c = document.createElement('canvas'), ctx = c.getContext('2d'), px = +(/(\d+)px/.exec(font) || [0, 64])[1];
+  ctx.font = font; c.width = Math.ceil(ctx.measureText(text).width) + px; c.height = Math.ceil(px * 1.8);
+  ctx.font = font; ctx.fillStyle = color; ctx.textBaseline = 'middle'; ctx.fillText(text, px / 2, c.height / 2);
+  return trimCanvas(c);
+}
+const asPic = c => ({ img: c.toDataURL('image/png'), aspect: c.height / c.width });
+function countItems() {
+  const n = sign.items.length;
+  $('#sigCount').textContent = n ? `${plural(n, 'item')} placed` : '';
+  $('#signGo').disabled = !n;
+}
+function updateSigButtons() {
+  $('#sigChange').hidden = !sign.sig;
+  $('#sigPlace').lastChild.textContent = sign.sig ? 'Add signature' : 'Create signature';
+}
+async function buildSign() {
+  $('#signWork').hidden = !current;
+  if (!current) return;
+  if (sign.for !== current) {
+    if (sign.js) sign.js.destroy();
+    Object.assign(sign, { for: current, items: [], page: 0, sel: null, js: await loadJs(current.bytes) });
+  }
+  await drawSheet(true);
+}
+let sheetToken = 0;
+async function drawSheet(anim) {
+  const t = ++sheetToken, sheet = $('#sheet'), n = current.pages;
+  sign.page = clamp(sign.page, 0, n - 1);
+  $('#sigPageLabel').textContent = `Page ${sign.page + 1} of ${n}`;
+  $('#sigPrev').disabled = sign.page === 0; $('#sigNext').disabled = sign.page >= n - 1;
+  const vp1 = (await sign.js.getPage(sign.page + 1)).getViewport({ scale: 1 });
+  // the whole page fits in the window: as wide as the space allows, but never taller than the screen
+  const fitH = Math.max(320, innerHeight - 140) * vp1.width / vp1.height;
+  const cssW = Math.round(clamp(Math.min(($('.sheet-wrap').clientWidth || 740) - 40, fitH), 200, 760));
+  const c = await renderPage(sign.js, sign.page + 1, Math.round(cssW * Math.min(2, devicePixelRatio || 1)));
+  if (t !== sheetToken) return;
+  sheet.style.width = cssW + 'px'; sheet.style.aspectRatio = `${vp1.width} / ${vp1.height}`;
+  sheet.innerHTML = ''; sheet.appendChild(c);
+  if (anim) { sheet.classList.remove('swap'); void sheet.offsetWidth; sheet.classList.add('swap'); }
+  drawItems(); countItems();
+}
+function drawItems() {
+  $$('#sheet .item').forEach(x => x.remove());
+  sign.items.filter(it => it.page === sign.page).forEach(it => $('#sheet').appendChild(itemEl(it)));
+}
+function selectItem(it) { sign.sel = it; $$('#sheet .item').forEach(x => x.classList.toggle('sel', x._it === it)); }
+function removeItem(it) {
+  const el = $$('#sheet .item').find(x => x._it === it);
+  const done = () => { sign.items.splice(sign.items.indexOf(it), 1); if (sign.sel === it) sign.sel = null; drawItems(); countItems(); };
+  if (el) { el.style.animation = 'leave .2s var(--ease) forwards'; setTimeout(done, 180); } else done();
+}
+function itemEl(it) {
+  const el = document.createElement('div'); el._it = it;
+  el.className = 'item' + (it.fresh ? ' new' : '') + (sign.sel === it ? ' sel' : ''); it.fresh = false;
+  el.style.left = it.x * 100 + '%'; el.style.top = it.y * 100 + '%'; el.style.width = it.w * 100 + '%';
+  el.innerHTML = `<img alt="" src="${it.img}"><span class="h" title="Drag to resize"></span><button class="x" aria-label="Remove">${icon('x')}</button>`;
+  el.addEventListener('pointerdown', e => {
+    if (e.target.closest('.x')) return;
+    e.preventDefault(); selectItem(it);
+    const r = $('#sheet').getBoundingClientRect(), resize = e.target.classList.contains('h');
+    const sx = e.clientX, sy = e.clientY, ox = it.x, oy = it.y, ow = it.w;
+    el.setPointerCapture(e.pointerId); el.classList.add('moving');
+    const move = ev => {
+      const dx = (ev.clientX - sx) / r.width, dy = (ev.clientY - sy) / r.height;
+      if (resize) {
+        const maxW = Math.min(1 - it.x, (1 - it.y) * r.height / (it.aspect * r.width));
+        it.w = clamp(ow + dx, 0.03, maxW); el.style.width = it.w * 100 + '%';
+      } else {
+        const hf = it.w * it.aspect * r.width / r.height;
+        it.x = clamp(ox + dx, 0, 1 - it.w); it.y = clamp(oy + dy, 0, 1 - hf);
+        el.style.left = it.x * 100 + '%'; el.style.top = it.y * 100 + '%';
+      }
+    };
+    const up = () => { el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up); el.classList.remove('moving'); };
+    el.addEventListener('pointermove', move); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+  });
+  $('.x', el).onclick = e => { e.stopPropagation(); removeItem(it); };
+  return el;
+}
+// a new item lands in the middle of the page shown, at a sensible size (height as a share of the page)
+function addItem(pic, heightShare, maxW) {
+  if (!current) return;
+  const r = $('#sheet').getBoundingClientRect(), ratio = r.width && r.height ? r.width / r.height : 0.707;
+  const w = Math.min(maxW, heightShare / (pic.aspect * ratio)), hf = w * pic.aspect * ratio;
+  // centred on the part of the page that is on screen, so a new item is never placed out of sight
+  const visTop = Math.max(r.top, 0), visBot = Math.min(r.bottom, innerHeight), cy = r.height && visBot > visTop ? ((visTop + visBot) / 2 - r.top) / r.height : 0.5;
+  const it = { page: sign.page, img: pic.img, aspect: pic.aspect, w, x: (1 - w) / 2, y: clamp(cy - hf / 2, 0, 1 - hf), fresh: true };
+  const stacked = sign.items.filter(o => o.page === it.page && Math.abs(o.y - it.y) < .02 && Math.abs(o.x - it.x) < .02).length;
+  it.y = Math.min(1 - hf, it.y + stacked * 0.05);
+  sign.items.push(it); sign.sel = it; drawItems(); countItems();
+}
+$('#sheet').addEventListener('pointerdown', e => { if (e.target.tagName === 'CANVAS') selectItem(null); });
+$('#sigPrev').onclick = () => { sign.page--; sign.sel = null; drawSheet(true); };
+$('#sigNext').onclick = () => { sign.page++; sign.sel = null; drawSheet(true); };
+$('#sigPlace').onclick = () => { if (sign.sig) addItem(sign.sig, 0.07, 0.45); else openSigDialog(); };
+$('#sigChange').onclick = () => openSigDialog();
+$('#sigDate').onclick = () => addItem(asPic(textImage(new Date().toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' }), '500 72px Geist, Helvetica, Arial, sans-serif', '#111318')), 0.022, 0.5);
+$('#sigTextBtn').onclick = () => { const row = $('#sigTextRow'); row.hidden = !row.hidden; if (!row.hidden) $('#sigText').focus(); };
+const placeText = () => { const t = $('#sigText').value.trim(); if (!t) { $('#sigText').focus(); return; } addItem(asPic(textImage(t, '500 72px Geist, Helvetica, Arial, sans-serif', '#111318')), 0.022, 0.9); $('#sigText').value = ''; };
+$('#sigTextAdd').onclick = placeText;
+$('#sigText').addEventListener('keydown', e => { if (e.key === 'Enter') placeText(); });
+document.addEventListener('keydown', e => {
+  if (active !== 'sign' || !sign.sel || $('#sigDlg').open || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  const it = sign.sel, step = e.shiftKey ? 0.02 : 0.004, moves = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] };
+  if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); removeItem(it); }
+  else if (moves[e.key]) { e.preventDefault(); it.x = clamp(it.x + moves[e.key][0], 0, 1 - it.w); it.y = clamp(it.y + moves[e.key][1], 0, 0.98); drawItems(); }
+});
+let resizeTimer; window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { if (active === 'sign' && current) drawSheet(false); }, 200); });
+$('#signGo').onclick = () => busy(view('sign'), $('#signGo'), async () => {
+  const p = view('sign'); if (!needFile(p)) return;
+  if (!sign.items.length) throw new Error('Place a signature, date or text on the page first.');
+  const doc = await loadLib(current.bytes), pics = new Map();
+  for (const it of sign.items) {
+    if (!pics.has(it.img)) pics.set(it.img, await doc.embedPng(it.img));
+    const vp = (await sign.js.getPage(it.page + 1)).getViewport({ scale: 1 }), pg = doc.getPage(it.page);
+    const w = it.w * vp.width, h = w * it.aspect;
+    const [x, y] = vp.convertToPdfPoint(it.x * vp.width, it.y * vp.height + h);   // the picture's bottom-left corner as seen on screen
+    pg.drawImage(pics.get(it.img), { x, y, width: w, height: h, rotate: degrees(pg.getRotation().angle) });
+  }
+  const pagesSigned = new Set(sign.items.map(i => i.page)).size;
+  await saved(p, await doc.save(), base(current.name) + '-signed.pdf', `${plural(sign.items.length, 'item')} on ${plural(pagesSigned, 'page')}`);
+});
+
+/* the signature window: draw, type or upload */
+const dlg = $('#sigDlg'), padC = $('#sigPad');
+let strokes = [], upBitmap = null;
+const ink = () => radio('ink');
+function sizePad() { const r = padC.getBoundingClientRect(), d = devicePixelRatio || 1; padC.width = Math.round(r.width * d); padC.height = Math.round(r.height * d); drawPad(); }
+function drawStroke(ctx, pts, k) {
+  ctx.beginPath(); ctx.moveTo(pts[0].x * k, pts[0].y * k);
+  if (pts.length === 1) ctx.lineTo(pts[0].x * k + 0.1, pts[0].y * k);
+  for (let i = 1; i < pts.length - 1; i++) ctx.quadraticCurveTo(pts[i].x * k, pts[i].y * k, (pts[i].x + pts[i + 1].x) / 2 * k, (pts[i].y + pts[i + 1].y) / 2 * k);
+  if (pts.length > 1) ctx.lineTo(pts[pts.length - 1].x * k, pts[pts.length - 1].y * k);
+  ctx.stroke();
+}
+function drawPad(ctx = padC.getContext('2d'), k = devicePixelRatio || 1) {
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  ctx.lineCap = ctx.lineJoin = 'round'; ctx.strokeStyle = ink(); ctx.lineWidth = 2.8 * k;
+  strokes.forEach(s => drawStroke(ctx, s, k));
+}
+padC.addEventListener('pointerdown', e => {
+  e.preventDefault(); padC.setPointerCapture(e.pointerId);
+  const r = padC.getBoundingClientRect(), s = [{ x: e.clientX - r.left, y: e.clientY - r.top }]; strokes.push(s); drawPad();
+  const move = ev => { for (const c of (ev.getCoalescedEvents ? ev.getCoalescedEvents() : [ev])) s.push({ x: c.clientX - r.left, y: c.clientY - r.top }); drawPad(); };
+  const up = () => { padC.removeEventListener('pointermove', move); padC.removeEventListener('pointerup', up); padC.removeEventListener('pointercancel', up); };
+  padC.addEventListener('pointermove', move); padC.addEventListener('pointerup', up); padC.addEventListener('pointercancel', up);
+});
+async function drawTyped() {
+  const c = $('#sigTypedCanvas'), r = c.getBoundingClientRect(), d = devicePixelRatio || 1, t = $('#sigTyped').value.trim();
+  c.width = Math.round(r.width * d); c.height = Math.round(r.height * d);
+  const ctx = c.getContext('2d'); ctx.clearRect(0, 0, c.width, c.height);
+  if (!t) { ctx.fillStyle = '#a3a8b4'; ctx.font = `500 ${15 * d}px Geist, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('Your typed signature appears here', c.width / 2, c.height / 2); return; }
+  try { await document.fonts.load('600 64px Caveat'); } catch {}
+  let px = 72 * d; ctx.font = `600 ${px}px Caveat, cursive`;
+  while (ctx.measureText(t).width > c.width * 0.86 && px > 14) { px -= 2; ctx.font = `600 ${px}px Caveat, cursive`; }
+  ctx.fillStyle = ink(); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t, c.width / 2, c.height / 2);
+}
+function cleanUpload() {
+  if (!upBitmap) return null;
+  const k = Math.min(1, 1400 / Math.max(upBitmap.width, upBitmap.height)), c = document.createElement('canvas');
+  c.width = Math.round(upBitmap.width * k); c.height = Math.round(upBitmap.height * k);
+  const ctx = c.getContext('2d'); ctx.drawImage(upBitmap, 0, 0, c.width, c.height);
+  if ($('#sigUpClean').checked) {
+    const d = ctx.getImageData(0, 0, c.width, c.height), a = d.data;
+    for (let i = 0; i < a.length; i += 4) { const lum = a[i] * .299 + a[i + 1] * .587 + a[i + 2] * .114; a[i + 3] = Math.min(a[i + 3], Math.round(clamp((235 - lum) / 70, 0, 1) * 255)); }
+    ctx.putImageData(d, 0, 0);
+  }
+  return trimCanvas(c, 4);
+}
+function showUpload() {
+  const t = cleanUpload(), box = $('#sigUpPrev'), c = $('#sigUpCanvas');
+  box.hidden = !t; if (!t) return;
+  const r = box.getBoundingClientRect(), d = devicePixelRatio || 1; c.width = Math.round(r.width * d); c.height = Math.round(r.height * d);
+  const ctx = c.getContext('2d'), k = Math.min(c.width * .9 / t.width, c.height * .85 / t.height);
+  ctx.drawImage(t, (c.width - t.width * k) / 2, (c.height - t.height * k) / 2, t.width * k, t.height * k);
+}
+makeDrop($('#sigUpDrop'), { multiple: false, accept: 'image/*', title: 'Drop a photo of your signature', sub: 'Sign on white paper and take a photo, or use a scan.', onFiles: async l => {
+  const f = l.find(isImg); if (!f) return;
+  try { upBitmap = await createImageBitmap(f); $('#sigUpDrop').classList.add('compact'); showUpload(); } catch { upBitmap = null; }
+} });
+$('#sigUpClean').onchange = showUpload;
+const tab = () => radio('sigTab');
+$$('input[name=sigTab]').forEach(r => r.onchange = () => {
+  $$('.sig-pane').forEach(p => { p.hidden = p.dataset.pane !== tab(); });
+  if (tab() === 'draw') sizePad(); if (tab() === 'type') { drawTyped(); $('#sigTyped').focus(); } if (tab() === 'upload') showUpload();
+  $('#inks').style.visibility = tab() === 'upload' ? 'hidden' : '';
+});
+$$('input[name=ink]').forEach(r => r.onchange = () => { drawPad(); drawTyped(); });
+$('#sigTyped').oninput = drawTyped;
+$('#sigClear').onclick = () => { strokes = []; drawPad(); $('#sigTyped').value = ''; drawTyped(); upBitmap = null; $('#sigUpPrev').hidden = true; $('#sigUpDrop').classList.remove('compact'); };
+function openSigDialog() { dlg.showModal(); requestAnimationFrame(() => { sizePad(); drawTyped(); }); }
+$('#sigClose').onclick = () => dlg.close();
+dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+$('#sigUse').onclick = () => {
+  let c = null;
+  if (tab() === 'draw' && strokes.length) {
+    const r = padC.getBoundingClientRect(), big = document.createElement('canvas'); big.width = Math.round(r.width * 3); big.height = Math.round(r.height * 3);
+    drawPad(big.getContext('2d'), 3); c = trimCanvas(big, 10);
+  } else if (tab() === 'type' && $('#sigTyped').value.trim()) c = textImage($('#sigTyped').value.trim(), '600 160px Caveat, cursive', ink());
+  else if (tab() === 'upload') c = cleanUpload();
+  if (!c) { const pane = $(`.sig-pane[data-pane=${tab()}]`); pane.style.animation = 'none'; void pane.offsetWidth; pane.style.animation = 'shake .4s var(--ease)'; return; }
+  sign.sig = asPic(c);
+  try { $('#sigRemember').checked ? localStorage.setItem('pdfkit-sig', JSON.stringify(sign.sig)) : localStorage.removeItem('pdfkit-sig'); } catch {}
+  dlg.close(); updateSigButtons(); addItem(sign.sig, 0.07, 0.45);
+};
+
+/* ---------- FILL FORMS ---------- */
+const formSt = { for: null };
+const FIELD_KINDS = [['text', 'PDFTextField'], ['check', 'PDFCheckBox'], ['radio', 'PDFRadioGroup'], ['drop', 'PDFDropdown'], ['list', 'PDFOptionList']];
+function fieldLabel(f) {
+  try { const tu = f.acroField.dict.lookup(PDFLib.PDFName.of('TU')); if (tu && tu.decodeText) { const t = tu.decodeText().trim(); if (t) return t; } } catch {}
+  const n = f.getName(); return n.split('.').pop().replace(/\[\d+\]/g, '').replace(/[_]+/g, ' ').trim() || n;
+}
+async function buildForms() {
+  const box = $('#formFields');
+  if (!current) { box.innerHTML = ''; $('#formBar').hidden = true; formSt.for = null; return; }
+  if (formSt.for === current) return;
+  formSt.for = current; box.innerHTML = ''; $('#formBar').hidden = true;
+  let doc; try { doc = await loadLib(current.bytes, { updateMetadata: false }); } catch { box.innerHTML = '<div class="empty-state"><b>This PDF could not be read</b></div>'; return; }
+  const pageOf = new Map();
+  doc.getPages().forEach((pg, i) => { const an = pg.node.Annots(); if (an) for (let k = 0; k < an.size(); k++) pageOf.set(String(an.get(k)), i); });
+  const groups = new Map(); let count = 0;
+  for (const f of doc.getForm().getFields()) {
+    const kind = (FIELD_KINDS.find(([, cls]) => f instanceof PDFLib[cls]) || [])[0]; if (!kind) continue;
+    const w = f.acroField.getWidgets()[0]; let pi = -1, rect = { x: 0, y: 0 };
+    if (w) { const ref = doc.context.getObjectRef(w.dict); if (ref && pageOf.has(String(ref))) pi = pageOf.get(String(ref)); try { rect = w.getRectangle(); } catch {} }
+    if (!groups.has(pi)) groups.set(pi, []);
+    groups.get(pi).push({ f, kind, rect, label: fieldLabel(f) }); count++;
+  }
+  if (!count) {
+    box.innerHTML = `<div class="empty-state"><span class="tile">${icon('form')}</span><b>This PDF has no fillable boxes</b>
+      <span>You can still write on it: open Sign and use Add text to place text anywhere on a page.</span><button class="btn" data-go-sign>${icon('sign')}Open Sign</button></div>`;
+    $('[data-go-sign]', box).onclick = () => go('sign');
+    return;
+  }
+  [...groups.keys()].sort((a, b) => (a < 0) - (b < 0) || a - b).forEach((pi, gi) => {
+    const g = document.createElement('div'); g.className = 'fgroup'; g.style.animationDelay = gi * 60 + 'ms';
+    g.innerHTML = `<h3>${pi < 0 ? 'Other fields' : 'Page ' + (pi + 1)}</h3><div class="form"></div>`;
+    const form = $('.form', g);
+    groups.get(pi).sort((a, b) => (b.rect.y - a.rect.y) || (a.rect.x - b.rect.x)).forEach(({ f, kind, label }) => {
+      const ro = f.isReadOnly(); let wrap, ctl;
+      if (kind === 'check') {
+        wrap = document.createElement('label'); wrap.className = 'switch field';
+        ctl = document.createElement('input'); ctl.type = 'checkbox'; ctl.checked = f.isChecked(); wrap.append(ctl, document.createTextNode(label));
+      } else {
+        wrap = document.createElement('label'); wrap.textContent = label;
+        if (kind === 'text') {
+          ctl = document.createElement(f.isMultiline() ? 'textarea' : 'input'); if (ctl.tagName === 'INPUT') ctl.type = 'text';
+          ctl.value = f.getText() || ''; const ml = f.getMaxLength(); if (ml) ctl.maxLength = ml;
+          if (f.isMultiline()) wrap.classList.add('wide');
+        } else if (kind === 'list') {
+          ctl = document.createElement('select'); ctl.multiple = true; const sel = f.getSelected();
+          f.getOptions().forEach(o => ctl.add(new Option(o, o, false, sel.includes(o))));
+        } else if (kind === 'drop' && f.isEditable()) {
+          ctl = document.createElement('input'); ctl.type = 'text'; ctl.value = f.getSelected()[0] || '';
+          const dl = document.createElement('datalist'); dl.id = 'dl-' + Math.random().toString(36).slice(2); f.getOptions().forEach(o => dl.append(new Option(o, o))); wrap.appendChild(dl); ctl.setAttribute('list', dl.id);
+        } else {
+          ctl = document.createElement('select'); ctl.add(new Option('Choose…', ''));
+          const cur = kind === 'radio' ? f.getSelected() : f.getSelected()[0];
+          f.getOptions().forEach(o => ctl.add(new Option(o, o, false, o === cur)));
+        }
+        wrap.appendChild(ctl);
+      }
+      ctl.dataset.field = f.getName(); ctl.dataset.kind = kind; ctl.dataset.label = label; ctl.disabled = ro;
+      if (ro) wrap.title = 'This box is locked in the PDF';
+      form.appendChild(wrap);
+    });
+    box.appendChild(g);
+  });
+  $('#formBar').hidden = false;
+}
+$('#formClear').onclick = () => $$('#formFields [data-field]').forEach(el => { if (el.disabled) return; if (el.type === 'checkbox') el.checked = false; else if (el.multiple) [...el.options].forEach(o => o.selected = false); else el.value = ''; });
+$('#formGo').onclick = () => busy(view('fill-forms'), $('#formGo'), async () => {
+  const p = view('fill-forms'); if (!needFile(p)) return;
+  const doc = await loadLib(current.bytes, { updateMetadata: false }), form = doc.getForm();
+  for (const el of $$('#formFields [data-field]')) {
+    if (el.disabled) continue;
+    const f = form.getField(el.dataset.field), k = el.dataset.kind;
+    try {
+      if (k === 'text') f.setText(el.value);
+      else if (k === 'check') el.checked ? f.check() : f.uncheck();
+      else if (k === 'list') { const v = [...el.selectedOptions].map(o => o.value); v.length ? f.select(v) : f.clear(); }
+      else if (el.value) f.select(el.value); else f.clear();
+    } catch (e) { throw new Error(`"${el.dataset.label}" could not be filled in. ${e.message}`); }
+  }
+  let bytes;
+  try { if ($('#formFlatten').checked) form.flatten(); bytes = await doc.save(); }
+  catch (e) {
+    if (/WinAnsi|encode/i.test(e.message)) throw new Error("Some answers use letters the form's font cannot show (for example Arabic or emoji). Use Latin letters there, or place that text with Sign › Add text.");
+    throw e;
+  }
+  await saved(p, bytes, base(current.name) + '-filled.pdf', $('#formFlatten').checked ? 'Answers locked into the page' : 'Answers can still be changed');
+});
+
+/* ---------- COMPRESS ---------- */
+const CMP = { medium: { dpi: 120, q: 0.62 }, strong: { dpi: 84, q: 0.45 } };
+function cmpLevelChanged() { const light = radio('cmpLevel') === 'light'; $('#cmpNote').hidden = light; $('#cmpGray').closest('label').hidden = light; }
+$$('input[name=cmpLevel]').forEach(r => r.onchange = cmpLevelChanged);
+function countUp(el, to, suffix) {
+  const t0 = performance.now(), dur = 900;
+  const step = now => { const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3); el.textContent = Math.round(to * e) + suffix; if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+$('#cmpGo').onclick = () => busy(view('compress'), $('#cmpGo'), async () => {
+  const p = view('compress'); if (!needFile(p)) return;
+  $('#cmpResult').innerHTML = '';
+  const level = radio('cmpLevel'), gray = $('#cmpGray').checked, before = current.size, name = base(current.name) + '-compressed.pdf';
+  let bytes;
+  if (level === 'light') {
+    setProgress(p, 'Tidying the file…', .4); await nextFrame();
+    bytes = await (await loadLib(current.bytes, { updateMetadata: false })).save({ useObjectStreams: true });
+  } else {
+    const { dpi, q } = CMP[level], js = await loadJs(current.bytes), out = await PDFDocument.create();
+    try {
+      for (let i = 1; i <= js.numPages; i++) {
+        setProgress(p, `Shrinking page ${i} of ${js.numPages}`, (i - 1) / js.numPages); await nextFrame();
+        const page = await js.getPage(i), vp1 = page.getViewport({ scale: 1 }), vp = page.getViewport({ scale: dpi / 72 });
+        const c = document.createElement('canvas'); c.width = Math.ceil(vp.width); c.height = Math.ceil(vp.height);
+        const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+        await page.render({ canvasContext: ctx, viewport: vp }).promise;
+        if (gray) { const d = ctx.getImageData(0, 0, c.width, c.height), a = d.data; for (let k = 0; k < a.length; k += 4) a[k] = a[k + 1] = a[k + 2] = a[k] * .299 + a[k + 1] * .587 + a[k + 2] * .114; ctx.putImageData(d, 0, 0); }
+        const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', q));
+        const img = await out.embedJpg(new Uint8Array(await blob.arrayBuffer()));
+        out.addPage([vp1.width, vp1.height]).drawImage(img, { x: 0, y: 0, width: vp1.width, height: vp1.height });
+        page.cleanup();
+      }
+    } finally { js.destroy(); }
+    setProgress(p, 'Saving…', .97); await nextFrame();
+    bytes = await out.save();
+  }
+  setStatus(p, '');
+  const after = bytes.length, smaller = after < before * 0.97, pct = Math.round((1 - after / before) * 100), box = $('#cmpResult');
+  box.innerHTML = `<div class="result"><div><div class="big${smaller ? '' : ' flat'}"></div><p class="sub"></p>
+    <div class="bars"><div class="barrow"><span>Before</span><div class="track"><i></i></div><span class="meta">${size(before)}</span></div>
+    <div class="barrow"><span>After</span><div class="track after"><i></i></div><span class="meta">${size(after)}</span></div></div>
+    <div class="acts"></div></div><div class="pthumb"></div></div>`;
+  const big = $('.big', box);
+  if (smaller) countUp(big, pct, '% smaller'); else big.textContent = 'Already small';
+  $('.sub', box).textContent = smaller ? `${size(before)} down to ${size(after)}. Check the preview, then save.`
+    : `This level could not make it smaller (${size(after)}). ${level === 'strong' ? 'Your file is already well compressed.' : 'Try a stronger level.'}`;
+  requestAnimationFrame(() => requestAnimationFrame(() => { $$('.track i', box)[0].style.width = '100%'; $$('.track i', box)[1].style.width = Math.min(100, after / before * 100) + '%'; }));
+  if (smaller) {
+    const b = document.createElement('button'); b.className = 'btn primary'; b.textContent = 'Save compressed PDF';
+    b.onclick = () => download(bytes, name, 'application/pdf', sn => toast(`Saved ${sn}`, `${pct}% smaller · ${size(after)}`, { label: 'Keep editing it', fn: () => useResult(bytes, sn) }));
+    $('.acts', box).appendChild(b);
+  }
+  try { const js = await loadJs(bytes); $('.pthumb', box).appendChild(await renderPage(js, 1, 240)); js.destroy(); } catch {}
 });
 
 /* ---------- DOCUMENT INFO ---------- */
@@ -1018,6 +1671,9 @@ const TOOLS = [
   ['images-to-pdf', 'image', 'Images to PDF', 'Turn photos and scans into a clean PDF.'],
   ['organize', 'grid', 'Organize pages', 'Reorder, rotate and remove pages visually.'],
   ['split', 'split', 'Split / extract', 'Break a PDF apart or keep only the pages you need.'],
+  ['sign', 'sign', 'Sign', 'Draw, type or upload your signature and place it.'],
+  ['fill-forms', 'form', 'Fill forms', 'Fill in the boxes of a fillable PDF form.'],
+  ['compress', 'shrink', 'Compress', 'Shrink a PDF so it is easy to email and upload.'],
   ['page-numbers', 'hash', 'Page numbers', 'Add "Page 1 of 10" or plain numbers to every page.'],
   ['watermark', 'stamp', 'Watermark', 'Stamp CONFIDENTIAL, DRAFT or your own text.'],
   ['info', 'info', 'Document info', 'Edit the title, author and keywords inside a PDF.'],
@@ -1048,7 +1704,7 @@ function route() {
   moveIndicator();
   const a = $(`#nav a[data-view="${active}"]`);
   if (a && matchMedia('(max-width: 860px)').matches) a.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
-  if (active === 'organize') buildOrganize();
+  refreshActive();
   document.title = active === 'home' ? 'PDF Toolkit' : `${TOOLS.find(t => t[0] === active)[2]} · PDF Toolkit`;
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
@@ -1074,7 +1730,7 @@ $('.asksave').hidden = !canPickFolder;
 $('#askWhere').checked = askWhere;
 $('#askWhere').onchange = () => { askWhere = $('#askWhere').checked; try { localStorage.setItem('pdfkit-ask', askWhere ? 'yes' : 'no'); } catch {} };
 
-merge.render(); imgs.render(); renderSources(); paintThemeButtons(); route();
+merge.render(); imgs.render(); renderSources(); paintThemeButtons(); updateSigButtons(); cmpLevelChanged(); route();
 </script>
 </body>
 </html>
