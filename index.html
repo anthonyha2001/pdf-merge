@@ -429,13 +429,14 @@
   .ed-tools { position: sticky; top: 12px; z-index: 6; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px; border-radius: 14px;
     background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--line); box-shadow: var(--shadow-2); }
   .tgroup { display: flex; gap: 2px; padding: 3px; border-radius: 11px; background: var(--surface-2); border: 1px solid var(--line); }
-  .tool { width: 36px; height: 34px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--muted); display: grid; place-items: center; cursor: pointer;
+  .tool { width: 34px; height: 34px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--muted); display: grid; place-items: center; cursor: pointer;
     transition: background .2s, color .2s, transform .15s var(--ease); }
   .tool:hover { color: var(--ink); background: var(--surface); }
   .tool:active { transform: scale(.9); }
   .tool.on { background: var(--ink); color: var(--bg); box-shadow: var(--shadow-2); }
   .tool svg.i { width: 18px; height: 18px; }
-  .swatches { display: flex; gap: 7px; padding: 0 4px; }
+  .swatches { display: flex; gap: 5px; padding: 0 3px; }
+  .ed-acts { display: flex; gap: 0; }
   .sw { width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%; background: var(--c); cursor: pointer; box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px transparent; transition: transform .2s var(--spring), box-shadow .2s; }
   .sw:hover { transform: scale(1.14); }
   .sw.on { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--ink); }
@@ -451,6 +452,12 @@
   .ed-svg .it.new { animation: pop .3s var(--spring) both; transform-box: fill-box; transform-origin: center; }
   .ed-svg .selbox { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; pointer-events: none; }
   .ed-svg .handle { fill: #fff; stroke: var(--accent); stroke-width: 2.5; cursor: nwse-resize; }
+  .ed-svg .it.sel { pointer-events: auto; cursor: move; }
+  .ed-svg .handle.rot { fill: var(--accent); stroke: #fff; cursor: grab; }
+  .ed-svg .handle.rot:active { cursor: grabbing; }
+  .ed-svg .rotstick { stroke: var(--accent); stroke-width: 1.5; pointer-events: none; }
+  .rot-tip { position: absolute; margin: -30px 0 0 14px; padding: 3px 7px; border-radius: 6px; background: var(--ink); color: var(--bg);
+    font: 600 11px/1.2 'Geist Mono', ui-monospace, monospace; pointer-events: none; white-space: nowrap; z-index: 3; animation: pop .18s var(--spring) both; }
   .ed-text { position: absolute; z-index: 4; margin: 0; padding: 0 3px; border: 1.5px solid var(--accent); border-radius: 4px; background: rgba(255,255,255,.92);
     font-family: Helvetica, Arial, sans-serif; line-height: 1.2; resize: none; overflow: hidden; outline: none; box-shadow: 0 4px 14px -4px rgba(0,0,0,.25); white-space: pre; }
   .redfind { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; padding: 12px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-1); }
@@ -2212,9 +2219,10 @@ function PageEditor(root, { viewId, tools, palette = [], onChange = () => {} }) 
       <label class="mini">Line <select data-width>${[1, 2, 3, 5, 8].map(w => `<option value="${w}"${w === 2 ? ' selected' : ''}>${w} pt</option>`).join('')}</select></label>
       <label class="mini">Text <select data-size>${[9, 10, 12, 14, 16, 20, 24, 32, 48].map(s => `<option value="${s}"${s === 16 ? ' selected' : ''}>${s} pt</option>`).join('')}</select></label>` : ''}
       <span class="grow"></span>
-      <button class="ibtn" data-undo title="Undo (Ctrl+Z)" aria-label="Undo">${icon('undo')}</button>
+      <div class="ed-acts"><button class="ibtn" data-undo title="Undo (Ctrl+Z)" aria-label="Undo">${icon('undo')}</button>
       <button class="ibtn" data-redo title="Redo (Ctrl+Y)" aria-label="Redo"><svg class="i redo"><use href="#i-undo"/></svg></button>
-      <button class="ibtn del" data-delete title="Delete the selected item (Delete)" aria-label="Delete the selected item">${icon('trash')}</button>
+      <button class="ibtn" data-dup title="Duplicate the selected item (Ctrl+D)" aria-label="Duplicate the selected item">${icon('copy')}</button>
+      <button class="ibtn del" data-delete title="Delete the selected item (Delete)" aria-label="Delete the selected item">${icon('trash')}</button></div>
     </div>
     <div class="viewer"><div class="pager"><button class="ibtn" data-prev aria-label="Previous page">${icon('left')}</button><span class="meta" data-label></span><button class="ibtn" data-next aria-label="Next page">${icon('right')}</button></div>
       <div class="sheet-wrap"><div class="sheet ed-sheet"><svg class="ed-svg" xmlns="http://www.w3.org/2000/svg"></svg></div></div></div></div>`;
@@ -2225,9 +2233,10 @@ function PageEditor(root, { viewId, tools, palette = [], onChange = () => {} }) 
   let before = null;
   const begin = () => { before = json(); };
   const end = () => { if (before !== null && before !== json()) { ed.hist.push(before); if (ed.hist.length > 100) ed.hist.shift(); ed.fut = []; } before = null; changed(); };
-  function changed() { q('[data-undo]').disabled = !ed.hist.length; q('[data-redo]').disabled = !ed.fut.length; q('[data-delete]').disabled = !ed.sel; onChange(ed); }
-  ed.undo = () => { if (!ed.hist.length) return; ed.fut.push(json()); ed.items = JSON.parse(ed.hist.pop()); ed.sel = null; render(); changed(); };
-  ed.redo = () => { if (!ed.fut.length) return; ed.hist.push(json()); ed.items = JSON.parse(ed.fut.pop()); ed.sel = null; render(); changed(); };
+  function changed() { q('[data-undo]').disabled = !ed.hist.length; q('[data-redo]').disabled = !ed.fut.length; q('[data-delete]').disabled = !ed.sel; q('[data-dup]').disabled = !ed.sel; onChange(ed); }
+  ed.undo = () => { if (!ed.hist.length) return; ed.fut.push(json()); ed.items = JSON.parse(ed.hist.pop()); keepSel(); render(); changed(); };
+  ed.redo = () => { if (!ed.fut.length) return; ed.hist.push(json()); ed.items = JSON.parse(ed.fut.pop()); keepSel(); render(); changed(); };
+  function keepSel() { if (!ed.items.some(x => x.id === ed.sel)) ed.sel = null; }
   // ----- geometry -----
   const measure = document.createElement('canvas').getContext('2d');
   function bbox(it) {
@@ -2256,8 +2265,14 @@ function PageEditor(root, { viewId, tools, palette = [], onChange = () => {} }) 
       s = `<rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" fill="transparent"/><text x="${it.x}" y="${it.y}" font-family="Helvetica, Arial, sans-serif" font-size="${it.size}" fill="${c}">${
         (it.text || '').split('\n').map((l, i) => `<tspan x="${it.x}" y="${it.y + it.size * 0.8 + i * it.size * 1.2}">${escapeHtml(l) || ' '}</tspan>`).join('')}</text>`;
     }
-    return `<g class="it${it.type === 'text' ? ' t' : ''}${it.fresh ? ' new' : ''}" data-id="${it.id}">${s}</g>`;
+    return `<g class="it${it.type === 'text' ? ' t' : ''}${it.fresh ? ' new' : ''}${it.id === ed.sel ? ' sel' : ''}" data-id="${it.id}"><g${turn(it)}>${s}</g></g>`;
   }
+  // boxes, circles and text keep a turn angle (degrees, clockwise as seen) around their middle; lines and pen strokes are turned point by point
+  const ROTATABLE = ['rect', 'highlight', 'ellipse', 'text'];
+  const mid = it => { const b = bbox(it); return [b.x + b.w / 2, b.y + b.h / 2]; };
+  const turn = it => { if (!it.rot) return ''; const [cx, cy] = mid(it); return ` transform="rotate(${it.rot} ${cx} ${cy})"`; };
+  const spin = (x, y, cx, cy, deg) => { const a = deg * Math.PI / 180, c = Math.cos(a), s = Math.sin(a); return [cx + (x - cx) * c - (y - cy) * s, cy + (x - cx) * s + (y - cy) * c]; };
+  ed.spin = spin; ed.mid = mid;
   function render() {
     const k = ed.vw / (sheet.clientWidth || ed.vw), mine = ed.items.filter(it => it.page === ed.page);
     let h = mine.map(toSvg).join('');
@@ -2265,10 +2280,15 @@ function PageEditor(root, { viewId, tools, palette = [], onChange = () => {} }) 
     const s = ed.sel && ed.items.find(it => it.id === ed.sel);
     if (s && s.page === ed.page && !s.editing) {
       const b = bbox(s), pad = 4 * k;
-      h += `<rect class="selbox" x="${b.x - pad}" y="${b.y - pad}" width="${b.w + 2 * pad}" height="${b.h + 2 * pad}" vector-effect="non-scaling-stroke"/>`;
-      const hd = (x, y, n) => `<circle class="handle" data-h="${n}" cx="${x}" cy="${y}" r="${6 * k}" vector-effect="non-scaling-stroke"/>`;
+      h += `<g${turn(s)}><rect class="selbox" x="${b.x - pad}" y="${b.y - pad}" width="${b.w + 2 * pad}" height="${b.h + 2 * pad}" vector-effect="non-scaling-stroke"/>`;
+      const hd = (x, y, n, c = '') => `<circle class="handle${c}" data-h="${n}" cx="${x}" cy="${y}" r="${6 * k}" vector-effect="non-scaling-stroke"/>`;
+      if (s.type !== 'redact') {   // the turn handle: a dot on a short stick above the item
+        const tx = b.x + b.w / 2, ty = b.y - pad - 24 * k;
+        h += `<line class="rotstick" x1="${tx}" y1="${b.y - pad}" x2="${tx}" y2="${ty}" vector-effect="non-scaling-stroke"/>` + hd(tx, ty, 'rot', ' rot');
+      }
       if (BOXY.includes(s.type)) h += hd(b.x + b.w, b.y + b.h, 'se');
       if (s.type === 'line' || s.type === 'arrow') h += hd(s.x1, s.y1, 'a') + hd(s.x2, s.y2, 'b');
+      h += '</g>';
     }
     svg.innerHTML = h;
   }
@@ -2326,7 +2346,9 @@ function PageEditor(root, { viewId, tools, palette = [], onChange = () => {} }) 
       const it = { id: ++edId, page: ed.page, type: 'text', x: p0[0], y: Math.max(0, p0[1] - ed.size * 0.6), text: '', size: ed.size, color: ed.colors.other };
       ed.items.push(it); select(it.id); editText(it, snapBefore); return;
     }
-    if (ed.tool === 'select' || handle) {
+    // with any drawing tool, pressing on the item already selected moves it instead of drawing a new one
+    if (ed.tool === 'select' || handle || (hit && hit.id === ed.sel)) {
+      if (e.altKey && hit && !handle) { begin(); const c = clone(hit, 0); select(c.id); return drag(e, 'move', c, p0, true); }   // Alt+drag: move a copy
       if (handle && ed.sel) return drag(e, 'h-' + handle, ed.items.find(x => x.id === ed.sel), p0);
       if (hit) { select(hit.id); return drag(e, 'move', hit, p0); }
       select(null); return;
@@ -2338,17 +2360,40 @@ function PageEditor(root, { viewId, tools, palette = [], onChange = () => {} }) 
     else Object.assign(it, { x1: p0[0], y1: p0[1], x2: p0[0], y2: p0[1] });
     ed.items.push(it); ed.sel = null; drag(e, 'create', it, p0);
   });
-  function drag(e, mode, it, p0) {
-    if (mode !== 'create') begin();
+  function drag(e, mode, it, p0, started) {
+    if (mode !== 'create' && !started) begin();
     svg.setPointerCapture(e.pointerId);
     const o = JSON.parse(JSON.stringify(it));
+    let rotTip = null;
+    if (mode === 'h-rot') {
+      rotTip = document.createElement('div'); rotTip.className = 'rot-tip';
+      const r = sheet.getBoundingClientRect(); Object.assign(rotTip.style, { left: e.clientX - r.left + 'px', top: e.clientY - r.top + 'px' });
+      rotTip.textContent = Math.round(o.rot || 0) + '°'; sheet.appendChild(rotTip);
+    }
     const move = ev => {
       const [x, y] = pt(ev), dx = x - p0[0], dy = y - p0[1];
       if (mode === 'move') {
         if ('x' in o) { it.x = o.x + dx; it.y = o.y + dy; }
         if ('x1' in o) { it.x1 = o.x1 + dx; it.y1 = o.y1 + dy; it.x2 = o.x2 + dx; it.y2 = o.y2 + dy; }
         if (o.pts) it.pts = o.pts.map(([a, b]) => [a + dx, b + dy]);
-      } else if (mode === 'h-se') { const b = bbox(o); it.x = b.x; it.y = b.y; it.w = Math.max(4, b.w + dx); it.h = Math.max(4, b.h + dy); }
+      } else if (mode === 'h-se') {
+        // the opposite corner stays where it is on screen, also when the box is turned
+        const b = bbox(o), r = o.rot || 0, [cx, cy] = [b.x + b.w / 2, b.y + b.h / 2], nw = spin(b.x, b.y, cx, cy, r);
+        const [lx, ly] = spin(x, y, nw[0], nw[1], -r), w = Math.max(4, lx - nw[0]), hh = Math.max(4, ly - nw[1]);
+        const c = spin(nw[0] + w / 2, nw[1] + hh / 2, nw[0], nw[1], r);
+        Object.assign(it, { x: c[0] - w / 2, y: c[1] - hh / 2, w, h: hh });
+      } else if (mode === 'h-rot') {
+        const [cx, cy] = mid(o), a0 = Math.atan2(p0[1] - cy, p0[0] - cx), a1 = Math.atan2(y - cy, x - cx);
+        let d = (a1 - a0) * 180 / Math.PI, total = (o.rot || 0) + d;
+        // Shift: steps of 15°; otherwise it clicks onto straight angles when close
+        const snap = ev.shiftKey ? Math.round(total / 15) * 15 : Math.abs(total - Math.round(total / 90) * 90) < 4 ? Math.round(total / 90) * 90 : total;
+        d += snap - total; total = snap;
+        if (ROTATABLE.includes(o.type)) it.rot = ((Math.round(total * 10) / 10) % 360 + 360) % 360;
+        else if (o.pts) it.pts = o.pts.map(([a, b]) => spin(a, b, cx, cy, d));
+        else { [it.x1, it.y1] = spin(o.x1, o.y1, cx, cy, d); [it.x2, it.y2] = spin(o.x2, o.y2, cx, cy, d); }
+        if (rotTip) { const r = sheet.getBoundingClientRect(); rotTip.style.left = ev.clientX - r.left + 'px'; rotTip.style.top = ev.clientY - r.top + 'px'; }
+        if (rotTip) rotTip.textContent =Math.round(ROTATABLE.includes(o.type) ? it.rot : ((total % 360) + 360) % 360) + '°';
+      }
       else if (mode === 'h-a') { it.x1 = x; it.y1 = y; }
       else if (mode === 'h-b') { it.x2 = x; it.y2 = y; }
       else if (BOXY.includes(it.type)) { it.w = x - it.x; it.h = y - it.y; }
@@ -2358,6 +2403,7 @@ function PageEditor(root, { viewId, tools, palette = [], onChange = () => {} }) 
     };
     const up = () => {
       svg.removeEventListener('pointermove', move); svg.removeEventListener('pointerup', up); svg.removeEventListener('pointercancel', up);
+      if (rotTip) rotTip.remove();
       if (mode === 'create') {
         const b = bbox(it), tiny = it.type === 'pen' ? it.pts.length < 2 : Math.max(b.w, b.h) < 3;
         if (tiny) { ed.items.splice(ed.items.indexOf(it), 1); before = null; render(); return; }
@@ -2377,6 +2423,7 @@ function PageEditor(root, { viewId, tools, palette = [], onChange = () => {} }) 
     Object.assign(ta.style, { left: it.x / ed.vw * 100 + '%', top: it.y / ed.vh * 100 + '%', fontSize: it.size * k + 'px', color: it.color });
     const fit = () => { measure.font = `${it.size * k}px Helvetica, Arial, sans-serif`; const lines = ta.value.split('\n');
       ta.style.width = Math.max(80, ...lines.map(l => measure.measureText(l).width + 16)) + 'px'; ta.style.height = (lines.length * it.size * k * 1.2 + 6) + 'px'; };
+    if (it.rot) { const b = bbox(it); Object.assign(ta.style, { transform: `rotate(${it.rot}deg)`, transformOrigin: `${b.w / 2 * k}px ${b.h / 2 * k}px` }); }
     ta.oninput = fit; fit(); sheet.appendChild(ta); setTimeout(() => ta.focus(), 0);
     let done = false;
     const commit = () => {
@@ -2403,6 +2450,19 @@ function PageEditor(root, { viewId, tools, palette = [], onChange = () => {} }) 
   q('[data-undo]').onclick = ed.undo; q('[data-redo]').onclick = ed.redo;
   ed.remove = () => { if (!ed.sel) return; begin(); ed.items = ed.items.filter(x => x.id !== ed.sel); ed.sel = null; render(); end(); };
   q('[data-delete]').onclick = ed.remove;
+  // a copy of an item, nudged down and right so it does not hide the original
+  function clone(it, off) {
+    const c = JSON.parse(JSON.stringify(it)); c.id = ++edId; c.fresh = true; delete c.editing;
+    if ('x' in c) { c.x += off; c.y += off; }
+    if ('x1' in c) { c.x1 += off; c.x2 += off; c.y1 += off; c.y2 += off; }
+    if (c.pts) c.pts = c.pts.map(([a, b]) => [a + off, b + off]);
+    ed.items.push(c); return c;
+  }
+  ed.duplicate = () => {
+    const it = ed.sel && ed.items.find(x => x.id === ed.sel); if (!it) return;
+    begin(); const c = clone(it, 12); ed.sel = c.id; render(); end();
+  };
+  q('[data-dup]').onclick = ed.duplicate;
   ed.addItems = list => { if (!list.length) return; begin(); list.forEach(it => ed.items.push({ id: ++edId, fresh: true, ...it })); render(); end(); };
   document.addEventListener('keydown', ev => {
     if (active !== viewId || !current || root.hidden || document.querySelector('dialog[open]') || /INPUT|TEXTAREA|SELECT/.test(ev.target.tagName)) return;
@@ -2410,6 +2470,7 @@ function PageEditor(root, { viewId, tools, palette = [], onChange = () => {} }) 
     if (mod && k === 'z' && !ev.shiftKey) { ev.preventDefault(); ed.undo(); }
     else if (mod && (k === 'y' || (k === 'z' && ev.shiftKey))) { ev.preventDefault(); ed.redo(); }
     else if (!mod && (k === 'delete' || k === 'backspace') && ed.sel) { ev.preventDefault(); ed.remove(); }
+    else if (mod && k === 'd') { ev.preventDefault(); ed.duplicate(); }
     else if (k === 'escape') { if (ed.sel) select(null); else setTool(tools[0] === 'redact' ? 'redact' : 'select'); }
     else if (!mod && ed.sel && k.startsWith('arrow')) {
       ev.preventDefault(); const it = ed.items.find(x => x.id === ed.sel), d = ev.shiftKey ? 10 : 1, dx = k === 'arrowleft' ? -d : k === 'arrowright' ? d : 0, dy = k === 'arrowup' ? -d : k === 'arrowdown' ? d : 0;
@@ -2428,8 +2489,10 @@ const annEd = PageEditor($('#annEd'), { viewId: 'annotate', tools: ['select', 't
 async function drawAnnotations(doc, ed) {
   const font = await doc.embedFont(StandardFonts.Helvetica);
   for (const it of ed.items) {
-    const pg = doc.getPage(it.page), vp = (await ed.js.getPage(it.page + 1)).getViewport({ scale: 1 }), R = degrees(norm(pg.getRotation().angle));
-    const P = (x, y) => { const [a, b] = vp.convertToPdfPoint(x, y); return { x: a, y: b }; };
+    const pg = doc.getPage(it.page), vp = (await ed.js.getPage(it.page + 1)).getViewport({ scale: 1 }), turnBy = it.rot || 0;
+    // a turned item: its corner points are turned around its middle as seen, and it is drawn turned the other way in PDF terms (y goes up there)
+    const R = degrees(norm(pg.getRotation().angle) - turnBy), [cx, cy] = ed.mid(it);
+    const P = (x, y) => { if (turnBy) [x, y] = ed.spin(x, y, cx, cy, turnBy); const [a, b] = vp.convertToPdfPoint(x, y); return { x: a, y: b }; };
     const col = hexRgb(it.color), line = (a, b) => pg.drawLine({ start: P(...a), end: P(...b), thickness: it.width, color: col, lineCap: PDFLib.LineCapStyle.Round });
     if (['rect', 'highlight', 'redact'].includes(it.type)) {
       const b = ed.bbox(it), o = P(b.x, b.y + b.h);   // its bottom-left corner as seen; turned with the page
@@ -3099,7 +3162,7 @@ const GUIDES = {
   compare: [['Drop the original PDF on the left and the changed one on the right.', 'Text changes lists what was removed (red) and added (green).', 'Visual changes shows each page with the differences painted red.'], 'Comparing scans? Use Visual changes: scans have no text to compare.'],
   sign: [['Open the PDF to sign.', 'Click Create signature, then draw it, type it or upload a photo of it.', 'Drag it into place; drag its corner to resize. Add a date or text if needed.', 'Click Save signed PDF.'], 'Your signature is remembered on this device only, never uploaded.'],
   'fill-forms': [['Open a fillable PDF form.', 'Fill in the boxes, grouped by page.', 'Optional: turn on "Lock the answers" so they cannot be changed.', 'Click Save filled PDF.'], 'No boxes found? Use Sign › Add text to write anywhere on the page.'],
-  annotate: [['Open a PDF.', 'Pick a tool above the page: text, highlighter, box, circle, arrow, line or pen.', 'Draw on the page. For text, click where it goes and type.', 'Use the Select tool to move, resize or delete, then click Save PDF.'], 'Ctrl+Z undoes. Hold Shift while drawing a line or arrow to keep it straight.'],
+  annotate: [['Open a PDF.', 'Pick a tool above the page: text, highlighter, box, circle, arrow, line or pen.', 'Draw on the page. For text, click where it goes and type.', 'With the Select tool, click a mark (one you just drew is already selected). Drag it to move it, the corner dot to resize, the dot on top to turn it. Then click Save PDF.'], 'Ctrl+D or the copy button duplicates the selected mark (Alt+drag drops a copy). Hold Shift while turning to go in 15° steps, or while drawing a line to keep it straight. Ctrl+Z undoes.'],
   'header-footer': [['Open a PDF.', 'Type text in any of the six spots: left, center or right, at the top or bottom.', 'Use {page}, {pages}, {date} or {file} to fill them in automatically. Check the preview.', 'Click Add header & footer.'], 'Use the Pages box to skip pages, for example 2- to start on page 2.'],
   'page-numbers': [['Open a PDF.', 'Choose where the number goes and how it looks.', 'Check the live preview.', 'Click Add page numbers.'], 'Turn on "Skip the cover page" so numbering starts on page 2.'],
   watermark: [['Open a PDF.', 'Choose text (like CONFIDENTIAL) or an image such as your logo.', 'Set the size, angle and opacity. Check the preview.', 'Click Add watermark.'], 'A logo with a transparent background (PNG) looks best.'],
