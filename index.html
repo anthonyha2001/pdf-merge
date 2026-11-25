@@ -460,6 +460,67 @@
   .nav { padding-bottom: 18px; -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 26px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 26px), transparent); }
   @media (max-width: 860px) { .ed-tools { top: calc(108px + env(safe-area-inset-top, 0px)); } .nav { -webkit-mask-image: none; mask-image: none; padding-bottom: 10px; } .redfind .seg, .redfind input, .redfind .btn { flex: 1 1 100%; min-width: 0; } }
 
+  /* ---------- phase 3: bookmarks, compare, extract, OCR ---------- */
+  .bmlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .bmlist li { display: flex; align-items: center; gap: 10px; padding: 7px 8px 7px 12px; margin-left: calc(var(--lvl) * 28px); border-radius: 12px; background: var(--surface); border: 1px solid var(--line);
+    box-shadow: var(--shadow-1); animation: rise .3s var(--ease) both; transition: margin .3s var(--ease); }
+  .bmicon { color: var(--accent); display: grid; }
+  .bmicon svg { width: 16px; height: 16px; }
+  .bmt { flex: 1; min-width: 0; }
+  .bmp { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); font-weight: 500; }
+  .bmp input { width: 70px; padding: 7px 8px; }
+  .cmp-slots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .cmp-slot { position: relative; display: flex; flex-direction: column; gap: 8px; }
+  .slot-tag { align-self: flex-start; font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); background: var(--surface-2); border: 1px solid var(--line); padding: 3px 9px; border-radius: 99px; }
+  .slot-tag.new { color: var(--accent); background: var(--accent-soft); border-color: transparent; }
+  .cmp-slot .drop { padding: 26px 16px; }
+  .cmp-file { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-1); animation: pop .35s var(--ease) both; }
+  .cmp-file .pthumb { width: 40px; height: 52px; border-radius: 6px; border: 1px solid var(--line); overflow: hidden; display: grid; place-items: center; flex: none; background: var(--surface-2); }
+  .cmp-file .pthumb canvas { max-width: 100%; max-height: 100%; }
+  .cmp-file .who { flex: 1; min-width: 0; } .cmp-file .name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #cmpWork { display: flex; flex-direction: column; gap: 12px; }
+  .difflist { border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); overflow: hidden; box-shadow: var(--shadow-1); font-size: 14px; }
+  .difflist:empty { display: none; }
+  .dl { display: grid; grid-template-columns: 22px 78px minmax(0, 1fr); gap: 8px; padding: 6px 12px; border-bottom: 1px solid var(--line); animation: rise .3s var(--ease) both; }
+  .dl:last-child { border-bottom: 0; }
+  .dl .sign { font: 700 14px var(--mono); text-align: center; }
+  .dl .pg { font: 500 12px var(--mono); color: var(--muted); padding-top: 2px; }
+  .dl .tx { overflow-wrap: anywhere; }
+  .dl.add { background: color-mix(in srgb, var(--ok) 10%, transparent); } .dl.add .sign { color: var(--ok); }
+  .dl.del { background: color-mix(in srgb, var(--danger) 9%, transparent); } .dl.del .sign { color: var(--danger); } .dl.del .tx { text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--danger) 60%, transparent); }
+  .dl.fold { display: block; text-align: center; font-size: 12.5px; color: var(--muted); background: var(--surface-2); padding: 5px; }
+  .cmp-pages { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center; }
+  .chipbtn { min-width: 32px; height: 28px; padding: 0 9px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); font: 600 12.5px var(--mono); cursor: pointer; color: var(--accent); transition: background .2s, transform .15s; }
+  .chipbtn:hover { transform: translateY(-1px); } .chipbtn.on { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+  .cmp-visual { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .cmp-visual figure { margin: 0; display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); }
+  .cmp-visual figcaption { font-size: 12.5px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  .cmp-canvas { display: grid; place-items: center; min-height: 200px; background: var(--surface-2); border-radius: 8px; padding: 10px; }
+  .cmp-canvas canvas { max-width: 100%; height: auto; box-shadow: 0 1px 3px rgba(0,0,0,.18); animation: rise .3s var(--ease) both; }
+  .txtout { width: 100%; min-height: 380px; resize: vertical; padding: 16px; border-radius: var(--r); border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+    font: 13.5px/1.6 var(--mono); box-shadow: var(--shadow-1); white-space: pre-wrap; }
+  #txtWork, #imgxWork, #ocrResult, #bmWork { display: flex; flex-direction: column; gap: 12px; }
+  input.bad { border-color: var(--danger) !important; }
+  .imgx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .imgx { position: relative; display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); cursor: pointer;
+    box-shadow: var(--shadow-1); transition: transform .25s var(--ease), box-shadow .25s, border-color .2s; animation: pop .35s var(--ease) both; animation-delay: calc(min(var(--i), 20) * 25ms); }
+  .imgx:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); }
+  .imgx input { position: absolute; opacity: 0; }
+  .imgx .check { position: absolute; z-index: 2; top: 14px; left: 14px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; color: #fff; background: rgba(0,0,0,.25); box-shadow: 0 0 0 2px #fff; transition: background .2s, transform .25s var(--spring); }
+  .imgx .check svg { width: 13px; height: 13px; stroke-width: 3; opacity: 0; transition: opacity .2s; }
+  .imgx.sel { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+  .imgx.sel .check { background: var(--accent); transform: scale(1.05); } .imgx.sel .check svg { opacity: 1; }
+  .imgx-pic { aspect-ratio: 1; display: grid; place-items: center; border-radius: 8px; overflow: hidden; background: repeating-conic-gradient(var(--surface-2) 0 25%, var(--surface) 0 50%) 0 0 / 14px 14px; }
+  .imgx-pic canvas { max-width: 100%; max-height: 100%; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .chip { position: relative; cursor: pointer; }
+  .chip input { position: absolute; opacity: 0; }
+  .chip span { display: inline-flex; align-items: center; padding: 7px 14px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface-2); color: var(--muted); font-size: 13.5px; font-weight: 500; transition: background .2s, color .2s, border-color .2s, transform .15s; }
+  .chip:hover span { color: var(--ink); }
+  .chip input:checked + span { background: var(--ink); color: var(--bg); border-color: transparent; }
+  .chip input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (max-width: 680px) { .cmp-slots, .cmp-visual { grid-template-columns: minmax(0, 1fr); } .bmlist li { margin-left: calc(var(--lvl) * 14px); flex-wrap: wrap; } .bmt { flex-basis: 100%; } .dl { grid-template-columns: 18px minmax(0, 1fr); } .dl .pg { display: none; } }
+
   /* ---------- phones ---------- */
   @media (max-width: 860px) {
     .app { grid-template-columns: minmax(0, 1fr); }
@@ -537,6 +598,13 @@
   <symbol id="i-arrow2" viewBox="0 0 24 24"><path d="M5 19 19 5M10 5h9v9"/></symbol>
   <symbol id="i-line" viewBox="0 0 24 24"><path d="M5 19 19 5"/></symbol>
   <symbol id="i-scribble" viewBox="0 0 24 24"><path d="M3 17c3-6 5-9 7-9 3 0-2 9 1 9 2 0 4-6 6-6 1.5 0 1 4 4 4"/></symbol>
+  <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/></symbol>
+  <symbol id="i-compare" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="18" rx="1.5"/><rect x="14" y="3" width="7" height="18" rx="1.5"/><path d="M6 8h1M6 12h1M17 8h1M17 12h1" stroke-width="2.5"/></symbol>
+  <symbol id="i-txt" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h8M8 17h8M8 9h2"/></symbol>
+  <symbol id="i-imgs" viewBox="0 0 24 24"><rect x="7" y="7" width="14" height="14" rx="2"/><path d="M3 15V5a2 2 0 0 1 2-2h10"/><circle cx="12" cy="12" r="1.5"/><path d="m21 17-3-3-6 6"/></symbol>
+  <symbol id="i-ocr" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 8h8M7 12h10M7 16h6"/></symbol>
+  <symbol id="i-indent" viewBox="0 0 24 24"><path d="M21 6H11M21 12H11M21 18H11M3 8l4 4-4 4"/></symbol>
+  <symbol id="i-outdent" viewBox="0 0 24 24"><path d="M21 6H11M21 12H11M21 18H11M7 8l-4 4 4 4"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
   <symbol id="i-crop" viewBox="0 0 24 24"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></symbol>
@@ -562,6 +630,8 @@
       <a href="#organize" data-view="organize"><svg class="i"><use href="#i-grid"/></svg>Organize pages</a>
       <a href="#split" data-view="split"><svg class="i"><use href="#i-split"/></svg>Split / extract</a>
       <a href="#crop" data-view="crop"><svg class="i"><use href="#i-crop"/></svg>Crop &amp; resize</a>
+      <a href="#bookmarks" data-view="bookmarks"><svg class="i"><use href="#i-bookmark"/></svg>Bookmarks</a>
+      <a href="#compare" data-view="compare"><svg class="i"><use href="#i-compare"/></svg>Compare</a>
       <div class="group">Sign and fill</div>
       <a href="#sign" data-view="sign"><svg class="i"><use href="#i-sign"/></svg>Sign</a>
       <a href="#fill-forms" data-view="fill-forms"><svg class="i"><use href="#i-form"/></svg>Fill forms</a>
@@ -575,6 +645,9 @@
       <div class="group">Shrink and convert</div>
       <a href="#compress" data-view="compress"><svg class="i"><use href="#i-shrink"/></svg>Compress</a>
       <a href="#pdf-to-images" data-view="pdf-to-images"><svg class="i"><use href="#i-toimg"/></svg>PDF to images</a>
+      <a href="#extract-text" data-view="extract-text"><svg class="i"><use href="#i-txt"/></svg>Extract text</a>
+      <a href="#extract-images" data-view="extract-images"><svg class="i"><use href="#i-imgs"/></svg>Extract images</a>
+      <a href="#ocr" data-view="ocr"><svg class="i"><use href="#i-ocr"/></svg>Scan to text (OCR)</a>
     </nav>
     <div class="rail-foot">
       <label class="switch asksave" hidden title="Off: files go straight to your Downloads folder"><input type="checkbox" id="askWhere">Ask where to save</label>
@@ -600,6 +673,7 @@
       <ul class="files" id="mergeList"></ul>
       <div class="bar">
         <label class="namefield"><span>Save as</span><input type="text" id="mergeName" value="merged.pdf"></label>
+        <label class="switch plain" title="Adds a clickable table of contents with each file's name"><input type="checkbox" id="mergeBm" checked>Add a bookmark for each file</label>
         <span class="grow"></span>
         <button class="btn" id="mergeClear" hidden>Clear all</button>
         <button class="btn primary" id="mergeGo" disabled>Merge PDFs</button>
@@ -804,6 +878,107 @@
       <div class="preview" data-preview="numbers"></div>
       </div>
       <div class="bar"><span class="grow"></span><button class="btn primary" id="numGo">Add page numbers</button></div>
+      <div class="status"></div>
+    </section>
+
+    <!-- BOOKMARKS -->
+    <section class="view" id="view-bookmarks" hidden>
+      <div class="head"><span class="tile"><svg class="i"><use href="#i-bookmark"/></svg></span><div><h1>Bookmarks</h1><p>The clickable table of contents that PDF readers show in their side panel.</p></div></div>
+      <div data-src></div>
+      <div id="bmWork" hidden>
+        <div class="bar">
+          <button class="btn small" id="bmAdd"><svg class="i"><use href="#i-plus"/></svg>Add bookmark</button>
+          <button class="btn small" id="bmEach"><svg class="i"><use href="#i-copy"/></svg>One for every page</button>
+          <button class="btn small ghosty" id="bmClear">Remove all</button>
+          <span class="grow"></span>
+          <span class="meta" id="bmCount"></span>
+        </div>
+        <ul class="bmlist" id="bmList"></ul>
+        <p class="hint">Use the arrows to put a bookmark inside the one above it (a chapter's sections, for example).</p>
+      </div>
+      <div class="bar" id="bmBar" hidden><span class="grow"></span><button class="btn primary" id="bmGo">Save PDF</button></div>
+      <div class="status"></div>
+    </section>
+
+    <!-- COMPARE -->
+    <section class="view" id="view-compare" hidden>
+      <div class="head"><span class="tile"><svg class="i"><use href="#i-compare"/></svg></span><div><h1>Compare</h1><p>Two versions of a document, side by side: see what was added, removed or moved.</p></div></div>
+      <div class="cmp-slots">
+        <div class="cmp-slot" data-slot="a"><span class="slot-tag">Original</span><div class="drop" id="cmpDropA"></div><div class="cmp-file" hidden></div></div>
+        <div class="cmp-slot" data-slot="b"><span class="slot-tag new">Changed</span><div class="drop" id="cmpDropB"></div><div class="cmp-file" hidden></div></div>
+      </div>
+      <div id="cmpWork" hidden>
+        <div class="bar">
+          <div class="seg" style="width:auto"><label><input type="radio" name="cmpMode" value="text" checked><span>Text changes</span></label><label><input type="radio" name="cmpMode" value="visual"><span>Visual changes</span></label></div>
+          <span class="grow"></span><span class="meta" id="cmpSummary"></span>
+        </div>
+        <div id="cmpText" class="difflist"></div>
+        <div id="cmpVisual" hidden>
+          <div class="pager"><button class="ibtn" id="cmpPrev" aria-label="Previous page"><svg class="i"><use href="#i-left"/></svg></button><span class="meta" id="cmpPageLabel"></span><button class="ibtn" id="cmpNext" aria-label="Next page"><svg class="i"><use href="#i-right"/></svg></button></div>
+          <div class="cmp-pages" id="cmpPagesList"></div>
+          <div class="cmp-visual"><figure><figcaption>Original</figcaption><div class="cmp-canvas" id="cmpCanvA"></div></figure><figure><figcaption>Changed <span class="meta" id="cmpPct"></span></figcaption><div class="cmp-canvas" id="cmpCanvB"></div></figure></div>
+        </div>
+      </div>
+      <div class="status"></div>
+    </section>
+
+    <!-- EXTRACT TEXT -->
+    <section class="view" id="view-extract-text" hidden>
+      <div class="head"><span class="tile"><svg class="i"><use href="#i-txt"/></svg></span><div><h1>Extract text</h1><p>All the text of a PDF, ready to copy or save as a text file.</p></div></div>
+      <div data-src></div>
+      <div id="txtWork" hidden>
+        <div class="bar">
+          <label class="mini">Pages <input type="text" id="txtPages" placeholder="All" style="width:110px"></label>
+          <label class="switch plain"><input type="checkbox" id="txtMarks" checked>Show where each page starts</label>
+          <span class="grow"></span>
+          <span class="meta" id="txtStats"></span>
+        </div>
+        <textarea id="txtOut" class="txtout" readonly spellcheck="false"></textarea>
+        <div class="bar"><span class="grow"></span><button class="btn" id="txtCopy"><svg class="i"><use href="#i-copy"/></svg>Copy all</button><button class="btn primary" id="txtGo">Save as .txt</button></div>
+      </div>
+      <div class="status"></div>
+    </section>
+
+    <!-- EXTRACT IMAGES -->
+    <section class="view" id="view-extract-images" hidden>
+      <div class="head"><span class="tile"><svg class="i"><use href="#i-imgs"/></svg></span><div><h1>Extract images</h1><p>Every picture inside the PDF, at the size it is stored.</p></div></div>
+      <div data-src></div>
+      <div id="imgxWork" hidden>
+        <div class="bar">
+          <label class="switch plain"><input type="checkbox" id="imgxSmall">Include very small images (icons, lines)</label>
+          <span class="grow"></span><span class="meta" id="imgxCount"></span>
+          <button class="btn small" id="imgxAll">Select all</button>
+        </div>
+        <div class="imgx-grid" id="imgxGrid"></div>
+        <div class="bar"><label class="mini">Format <select id="imgxFmt"><option value="png">PNG</option><option value="jpeg">JPG</option></select></label><span class="grow"></span><button class="btn primary" id="imgxGo">Save selected</button></div>
+      </div>
+      <div class="status"></div>
+    </section>
+
+    <!-- OCR -->
+    <section class="view" id="view-ocr" hidden>
+      <div class="head"><span class="tile"><svg class="i"><use href="#i-ocr"/></svg></span><div><h1>Scan to text (OCR)</h1><p>Reads the words in scanned pages so you can search, select and copy them.</p></div></div>
+      <div data-src></div>
+      <div class="form">
+        <div class="wide"><span class="flabel">Languages in the document</span>
+          <div class="chips" id="ocrLangs">
+            <label class="chip"><input type="checkbox" value="eng" checked><span>English</span></label>
+            <label class="chip"><input type="checkbox" value="fra"><span>French</span></label>
+            <label class="chip"><input type="checkbox" value="ara"><span>Arabic</span></label>
+            <label class="chip"><input type="checkbox" value="spa"><span>Spanish</span></label>
+            <label class="chip"><input type="checkbox" value="deu"><span>German</span></label>
+            <label class="chip"><input type="checkbox" value="ita"><span>Italian</span></label>
+          </div>
+        </div>
+        <label>Pages <input type="text" id="ocrPages" placeholder="All, or e.g. 1-3"></label>
+        <label class="switch"><input type="checkbox" id="ocrSkip" checked>Skip pages that already have text</label>
+        <p class="hint wide">The reading engine (about 5 MB, plus each language) is downloaded the first time, so this tool needs an internet connection. Your PDF itself is never uploaded. Searchable PDFs work for Latin-script languages; Arabic text is given as a text file.</p>
+      </div>
+      <div class="bar"><span class="grow"></span><button class="btn primary" id="ocrGo">Read the pages</button></div>
+      <div id="ocrResult" hidden>
+        <textarea id="ocrOut" class="txtout" readonly spellcheck="false"></textarea>
+        <div class="bar"><span class="meta" id="ocrStats"></span><span class="grow"></span><button class="btn" id="ocrTxt">Save as .txt</button><button class="btn primary" id="ocrPdf">Save searchable PDF</button></div>
+      </div>
       <div class="status"></div>
     </section>
 
@@ -1198,11 +1373,14 @@ $('#mergeGo').onclick = () => busy(view('merge'), $('#mergeGo'), async () => {
     try { return parseRanges(it.range, it.pages).flat(); }
     catch (e) { $$('#mergeList li')[i]?.querySelector('.pagepick input')?.classList.add('bad'); throw new Error(`${it.file.name}: ${e.message}`); }
   });
+  const marks = [];
   for (let i = 0; i < n; i++) {
     const f = merge.items[i].file; setProgress(p, `Adding ${f.name}`, i / n); await nextFrame();
     let src; try { src = await loadLib(await f.arrayBuffer()); } catch { throw new Error(`Could not read "${f.name}". It may be damaged or password-protected.`); }
+    marks.push({ title: f.name.replace(/\.pdf$/i, ''), page: out.getPageCount(), level: 0 });
     (await out.copyPages(src, picks[i] || src.getPageIndices())).forEach(pg => out.addPage(pg));
   }
+  if ($('#mergeBm').checked) writeOutline(out, marks);
   setProgress(p, 'Saving…', .95); await nextFrame();
   const bytes = await out.save(), name = withPdf($('#mergeName').value.trim() || 'merged.pdf');
   setStatus(p, '');
@@ -1282,6 +1460,10 @@ function refreshActive() {
   if (active === 'header-footer') hfPreview.draw();
   if (active === 'annotate') annEd.load();
   if (active === 'redact') redEd.load();
+  if (active === 'bookmarks') buildBookmarks();
+  if (active === 'extract-text') buildText();
+  if (active === 'extract-images') buildImages();
+  if (active === 'ocr' && ocr.result && ocr.result.for !== current) { ocr.result = null; $('#ocrResult').hidden = true; }
 }
 async function useResult(bytes, name) {
   await setCurrent(name, new Uint8Array(bytes));
@@ -2142,6 +2324,410 @@ $('#redGo').onclick = () => busy(view('redact'), $('#redGo'), async () => {
   await saved(p, await doc.save(), base(current.name) + '-redacted.pdf', `${plural(redEd.items.length, 'area')} removed on ${plural(byPage.size, 'page')}`);
 });
 
+/* ---------- BOOKMARKS (the PDF's outline) ----------
+   Written by hand into the PDF: an /Outlines tree of items with /Title, /Dest [page /XYZ null null null], /Parent,
+   /Prev, /Next, /First, /Last, /Count, all open. items: [{ title, page (0-based), level (0 = top) }] in reading order. */
+function writeOutline(doc, items) {
+  const { PDFName, PDFNumber, PDFHexString, PDFNull } = PDFLib, ctx = doc.context, pages = doc.getPages();
+  doc.catalog.delete(PDFName.of('Outlines'));
+  if (!items.length) return;
+  const root = { kids: [] }, stack = [{ level: -1, node: root }];
+  items.forEach(it => { const node = { ...it, kids: [] }; while (stack[stack.length - 1].level >= it.level) stack.pop(); stack[stack.length - 1].node.kids.push(node); stack.push({ level: it.level, node }); });
+  const build = (kids, parentRef) => {
+    const refs = kids.map(() => ctx.nextRef()); let count = 0;
+    kids.forEach((k, i) => {
+      const d = ctx.obj({}), pg = pages[clamp(k.page, 0, pages.length - 1)];
+      d.set(PDFName.of('Title'), PDFHexString.fromText(k.title || 'Untitled'));
+      d.set(PDFName.of('Parent'), parentRef);
+      d.set(PDFName.of('Dest'), ctx.obj([pg.ref, PDFName.of('XYZ'), PDFNull, PDFNull, PDFNull]));
+      if (i > 0) d.set(PDFName.of('Prev'), refs[i - 1]);
+      if (i < kids.length - 1) d.set(PDFName.of('Next'), refs[i + 1]);
+      if (k.kids.length) { const sub = build(k.kids, refs[i]); d.set(PDFName.of('First'), sub.first); d.set(PDFName.of('Last'), sub.last); d.set(PDFName.of('Count'), PDFNumber.of(sub.count)); count += sub.count; }
+      ctx.assign(refs[i], d); count++;
+    });
+    return { first: refs[0], last: refs[refs.length - 1], count };
+  };
+  const outRef = ctx.nextRef(), top = build(root.kids, outRef);
+  ctx.assign(outRef, ctx.obj({ Type: 'Outlines', First: top.first, Last: top.last, Count: PDFNumber.of(top.count) }));
+  doc.catalog.set(PDFName.of('Outlines'), outRef);
+  doc.catalog.set(PDFName.of('PageMode'), PDFName.of('UseOutlines'));   // readers open with the bookmarks panel showing
+}
+// the bookmarks already in a PDF, flattened with their level, read with pdf.js
+async function readOutline(js) {
+  const out = [], walk = async (items, level) => {
+    for (const it of items || []) {
+      let page = 0;
+      try { const dest = typeof it.dest === 'string' ? await js.getDestination(it.dest) : it.dest; if (dest && dest[0]) page = typeof dest[0] === 'number' ? dest[0] : await js.getPageIndex(dest[0]); } catch {}
+      out.push({ title: it.title || '', page, level: Math.min(level, 4) });
+      await walk(it.items, level + 1);
+    }
+  };
+  await walk(await js.getOutline(), 0);
+  return out;
+}
+const bm = { for: null, items: [] };
+async function buildBookmarks() {
+  $('#bmWork').hidden = $('#bmBar').hidden = !current; if (!current || bm.for === current) return;
+  bm.for = current; bm.items = [];
+  const js = await loadJs(current.bytes); try { bm.items = await readOutline(js); } finally { js.destroy(); }
+  drawBookmarks();
+  if (bm.items.length) setStatus(view('bookmarks'), `This PDF already has ${plural(bm.items.length, 'bookmark')}. Change them below.`);
+}
+function drawBookmarks() {
+  const ul = $('#bmList'); ul.innerHTML = '';
+  bm.items.forEach((it, i) => {
+    const li = document.createElement('li'); li.style.setProperty('--lvl', it.level);
+    li.innerHTML = `<span class="bmicon">${icon('bookmark')}</span><input type="text" class="bmt" aria-label="Bookmark title"><label class="bmp">Page <input type="number" min="1" max="${current.pages}" aria-label="Page"></label>
+      <span class="tools"><button class="ibtn" data-a="out" title="Move out a level" ${it.level === 0 ? 'disabled' : ''}>${icon('outdent')}</button><button class="ibtn" data-a="in" title="Put inside the one above" ${i === 0 || it.level > bm.items[i - 1].level ? 'disabled' : ''}>${icon('indent')}</button>
+      <button class="ibtn" data-a="up" title="Move up" ${i === 0 ? 'disabled' : ''}>${icon('up')}</button><button class="ibtn" data-a="down" title="Move down" ${i === bm.items.length - 1 ? 'disabled' : ''}>${icon('down')}</button>
+      <button class="ibtn del" data-a="del" title="Remove">${icon('x')}</button></span>`;
+    const t = $('.bmt', li), pg = $('.bmp input', li);
+    t.value = it.title; pg.value = it.page + 1;
+    t.oninput = () => { it.title = t.value; }; pg.oninput = () => { it.page = clamp((+pg.value || 1) - 1, 0, current.pages - 1); };
+    $$('[data-a]', li).forEach(b => b.onclick = () => {
+      const a = b.dataset.a;
+      if (a === 'in') it.level++; else if (a === 'out') it.level--;
+      else if (a === 'up') [bm.items[i - 1], bm.items[i]] = [bm.items[i], bm.items[i - 1]];
+      else if (a === 'down') [bm.items[i + 1], bm.items[i]] = [bm.items[i], bm.items[i + 1]];
+      else bm.items.splice(i, 1);
+      // keep the levels valid: never more than one deeper than the item above
+      bm.items.forEach((x, k) => { x.level = clamp(x.level, 0, k ? bm.items[k - 1].level + 1 : 0); });
+      drawBookmarks();
+    });
+    ul.appendChild(li);
+  });
+  $('#bmCount').textContent = bm.items.length ? plural(bm.items.length, 'bookmark') : 'No bookmarks yet';
+}
+$('#bmAdd').onclick = () => { const last = bm.items[bm.items.length - 1]; bm.items.push({ title: '', page: last ? Math.min(last.page + 1, current.pages - 1) : 0, level: last ? last.level : 0 }); drawBookmarks(); $$('#bmList .bmt').pop().focus(); };
+$('#bmEach').onclick = () => { bm.items = Array.from({ length: current.pages }, (_, i) => ({ title: `Page ${i + 1}`, page: i, level: 0 })); drawBookmarks(); };
+$('#bmClear').onclick = () => { bm.items = []; drawBookmarks(); };
+$('#bmGo').onclick = () => busy(view('bookmarks'), $('#bmGo'), async () => {
+  const p = view('bookmarks'); if (!needFile(p)) return;
+  const empty = bm.items.findIndex(x => !x.title.trim());
+  if (empty >= 0) { $$('#bmList .bmt')[empty].focus(); throw new Error('Every bookmark needs a title. Type one, or remove the empty bookmark.'); }
+  const doc = await loadLib(current.bytes, { updateMetadata: false });
+  writeOutline(doc, bm.items.map(x => ({ ...x, title: x.title.trim() })));
+  await saved(p, await doc.save(), base(current.name) + '-bookmarked.pdf', bm.items.length ? plural(bm.items.length, 'bookmark') : 'All bookmarks removed');
+});
+
+/* ---------- reading a PDF's text, in reading order ---------- */
+async function pageText(page) {
+  const tc = await page.getTextContent(), vp = page.getViewport({ scale: 1 });
+  // the break before each piece of text is decided when that text arrives: a drop of more than ~2 lines starts a new
+  // paragraph, a smaller drop (or pdf.js's end-of-line mark) a new line, a gap on the same line a space
+  let s = '', lastY = null, lastEnd = null, eol = false;
+  for (const it of tc.items) {
+    if (it.str === undefined) continue;
+    if (!it.str) { if (it.hasEOL) eol = true; continue; }
+    const t = pdfjsLib.Util.transform(vp.transform, it.transform), h = Math.hypot(t[2], t[3]) || 10;
+    if (lastY !== null) {
+      const drop = Math.abs(t[5] - lastY);
+      if (drop > h * 2.4) s += '\n\n';
+      else if (drop > h * 0.6 || eol) s += '\n';
+      else if (lastEnd !== null && t[4] - lastEnd > h * 0.2 && !/\s$/.test(s) && !/^\s/.test(it.str)) s += ' ';
+    }
+    s += it.str; eol = !!it.hasEOL;
+    lastY = t[5]; lastEnd = t[4] + it.width * vp.scale;
+  }
+  return s.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+
+/* ---------- EXTRACT TEXT ---------- */
+const txt = { for: null, pages: [] };
+async function buildText() {
+  $('#txtWork').hidden = !current; if (!current) return;
+  if (txt.for !== current) {
+    txt.for = current; txt.pages = []; $('#txtOut').value = ''; $('#txtStats').textContent = 'Reading…';
+    const js = await loadJs(current.bytes), p = view('extract-text');
+    try { for (let n = 1; n <= js.numPages; n++) { if (txt.for !== current) return; setProgress(p, `Reading page ${n} of ${js.numPages}`, n / js.numPages); txt.pages.push(await pageText(await js.getPage(n))); } }
+    finally { js.destroy(); }
+    setStatus(p, txt.pages.every(t => !t) ? 'No text was found. This PDF is probably a scan: use Scan to text (OCR) to read it.' : '');
+  }
+  showText();
+}
+function showText() {
+  if (!txt.pages.length) return;
+  let pick = null; $('#txtPages').classList.remove('bad');
+  try { if ($('#txtPages').value.trim()) pick = parseRanges($('#txtPages').value, txt.pages.length).flat(); } catch { $('#txtPages').classList.add('bad'); }
+  const list = (pick || txt.pages.map((_, i) => i)), marks = $('#txtMarks').checked;
+  const out = list.map(i => (marks ? `——— Page ${i + 1} ———\n\n` : '') + txt.pages[i]).join(marks ? '\n\n' : '\n\n');
+  $('#txtOut').value = out;
+  const words = list.reduce((t, i) => t + (txt.pages[i].match(/\S+/g) || []).length, 0);
+  $('#txtStats').textContent = `${plural(list.length, 'page')} · ${words.toLocaleString()} words · ${out.length.toLocaleString()} characters`;
+}
+$('#txtPages').addEventListener('input', showText); $('#txtMarks').addEventListener('change', showText);
+$('#txtCopy').onclick = async () => {
+  try { await navigator.clipboard.writeText($('#txtOut').value); toast('Copied', 'All the text is on your clipboard.'); }
+  catch { $('#txtOut').select(); toast('Text selected', 'Press Ctrl+C to copy it.', null, 'info'); }
+};
+$('#txtGo').onclick = () => busy(view('extract-text'), $('#txtGo'), async () => {
+  if (!needFile(view('extract-text'))) return;
+  await download(new Blob(['﻿' + $('#txtOut').value.replace(/\n/g, '\r\n')], { type: 'text/plain;charset=utf-8' }), base(current.name) + '.txt', 'text/plain');
+});
+
+/* ---------- EXTRACT IMAGES ----------
+   pdf.js lists the drawing steps of each page; the "paint image" steps name the pictures, which pdf.js has already
+   decoded: either as a bitmap or as raw pixels (grey 1-bit, RGB or RGBA). Each is drawn on a canvas and saved. */
+const imgx = { for: null, list: [] };
+function imgToCanvas(img) {
+  const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const x = c.getContext('2d');
+  if (img.bitmap) { x.drawImage(img.bitmap, 0, 0); return c; }
+  if (!img.data) return null;
+  const id = x.createImageData(img.width, img.height), d = id.data, s = img.data, n = img.width * img.height;
+  if (img.kind === 3 || s.length === n * 4) d.set(s.subarray ? s.subarray(0, n * 4) : s.slice(0, n * 4));
+  else if (img.kind === 2 || s.length === n * 3) for (let i = 0, j = 0; i < n; i++, j += 3) { d[i * 4] = s[j]; d[i * 4 + 1] = s[j + 1]; d[i * 4 + 2] = s[j + 2]; d[i * 4 + 3] = 255; }
+  else { const row = (img.width + 7) >> 3; for (let y = 0; y < img.height; y++) for (let xx = 0; xx < img.width; xx++) { const bit = (s[y * row + (xx >> 3)] >> (7 - (xx & 7))) & 1, v = bit ? 255 : 0, i = (y * img.width + xx) * 4; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; } }
+  x.putImageData(id, 0, 0); return c;
+}
+const objGet = (objs, name) => new Promise(res => { try { objs.get(name, res); } catch { res(null); } setTimeout(() => res(null), 8000); });
+async function buildImages() {
+  $('#imgxWork').hidden = !current; if (!current) return;
+  if (imgx.for === current) return drawImgx();
+  imgx.for = current; imgx.list = []; $('#imgxGrid').innerHTML = ''; $('#imgxCount').textContent = 'Looking for pictures…';
+  const js = await loadJs(current.bytes), p = view('extract-images'), O = pdfjsLib.OPS, seen = new Set();
+  try {
+    for (let n = 1; n <= js.numPages; n++) {
+      if (imgx.for !== current) return;
+      setProgress(p, `Looking at page ${n} of ${js.numPages}`, n / js.numPages);
+      const page = await js.getPage(n), ops = await page.getOperatorList();
+      for (let i = 0; i < ops.fnArray.length; i++) {
+        const f = ops.fnArray[i]; if (f !== O.paintImageXObject && f !== O.paintJpegXObject && f !== O.paintImageXObjectRepeat) continue;
+        const name = ops.argsArray[i][0]; if (seen.has(n + ':' + name) || (name.startsWith('g_') && seen.has(name))) continue;
+        seen.add(name.startsWith('g_') ? name : n + ':' + name);
+        const img = await objGet(name.startsWith('g_') ? page.commonObjs : page.objs, name), c = img && imgToCanvas(img);
+        if (c) imgx.list.push({ page: n, canvas: c, w: c.width, h: c.height, sel: true });
+      }
+      page.cleanup();
+    }
+  } finally { js.destroy(); }
+  setStatus(p, imgx.list.length ? '' : 'No pictures were found in this PDF.');
+  drawImgx();
+}
+function drawImgx() {
+  const small = $('#imgxSmall').checked, list = imgx.list.filter(x => small || (x.w >= 48 && x.h >= 48)), g = $('#imgxGrid'); g.innerHTML = '';
+  list.forEach((x, i) => {
+    const card = document.createElement('label'); card.className = 'imgx' + (x.sel ? ' sel' : ''); card.style.setProperty('--i', i);
+    card.innerHTML = `<input type="checkbox" ${x.sel ? 'checked' : ''}><span class="check">${icon('check')}</span><div class="imgx-pic"></div><span class="meta">p. ${x.page} · ${x.w}×${x.h}</span>`;
+    const t = document.createElement('canvas'), k = Math.min(1, 300 / Math.max(x.w, x.h)); t.width = Math.max(1, Math.round(x.w * k)); t.height = Math.max(1, Math.round(x.h * k)); t.getContext('2d').drawImage(x.canvas, 0, 0, t.width, t.height);
+    $('.imgx-pic', card).appendChild(t);
+    $('input', card).onchange = e => { x.sel = e.target.checked; card.classList.toggle('sel', x.sel); countImgx(); };
+    g.appendChild(card);
+  });
+  countImgx();
+}
+function countImgx() {
+  const small = $('#imgxSmall').checked, list = imgx.list.filter(x => small || (x.w >= 48 && x.h >= 48)), s = list.filter(x => x.sel).length;
+  $('#imgxCount').textContent = list.length ? `${s} of ${plural(list.length, 'picture')} selected` : (imgx.list.length ? 'Only very small pictures here' : '');
+  $('#imgxGo').disabled = !s;
+}
+$('#imgxSmall').onchange = drawImgx;
+$('#imgxAll').onclick = () => { const small = $('#imgxSmall').checked, list = imgx.list.filter(x => small || (x.w >= 48 && x.h >= 48)), all = list.every(x => x.sel); list.forEach(x => x.sel = !all); drawImgx(); };
+$('#imgxGo').onclick = () => busy(view('extract-images'), $('#imgxGo'), async () => {
+  const p = view('extract-images'); if (!needFile(p)) return;
+  const small = $('#imgxSmall').checked, list = imgx.list.filter(x => x.sel && (small || (x.w >= 48 && x.h >= 48))), fmt = $('#imgxFmt').value, ext = fmt === 'png' ? 'png' : 'jpg', b = base(current.name);
+  const files = [];
+  for (let i = 0; i < list.length; i++) {
+    setProgress(p, `Saving picture ${i + 1} of ${list.length}`, i / list.length);
+    let c = list[i].canvas;
+    if (fmt === 'jpeg') { const w = document.createElement('canvas'); w.width = c.width; w.height = c.height; const x = w.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, w.width, w.height); x.drawImage(c, 0, 0); c = w; }
+    files.push({ name: `${b}-p${list[i].page}-${i + 1}.${ext}`, blob: await new Promise(r => c.toBlob(r, 'image/' + fmt, 0.92)) });
+  }
+  setStatus(p, '');
+  if (files.length === 1) return download(files[0].blob, files[0].name);
+  const zip = new JSZip(); files.forEach(f => zip.file(f.name, f.blob));
+  const blob = await zip.generateAsync({ type: 'blob' });
+  await download(blob, `${b}-images.zip`, 'application/zip', sn => toast(`Saved ${sn}`, `${plural(files.length, 'picture')} · ${size(blob.size)}`));
+});
+
+/* ---------- COMPARE ---------- */
+const cmp = { a: null, b: null, page: 0, textDone: false, pageDiffs: null };
+function cmpSlot(k) {
+  const slot = $(`.cmp-slot[data-slot=${k}]`), f = cmp[k];
+  $('.drop', slot).hidden = !!f; const box = $('.cmp-file', slot); box.hidden = !f;
+  if (f) {
+    box.innerHTML = `<span class="pthumb"></span><span class="who"><div class="name"></div><div class="meta">${plural(f.pages, 'page')} · ${size(f.size)}</div></span><button class="ibtn" aria-label="Choose another file">${icon('x')}</button>`;
+    $('.name', box).textContent = f.name; $('.pthumb', box).appendChild(f.thumb);
+    $('button', box).onclick = () => { cmp[k] = null; cmpSlot(k); cmpReset(); };
+  }
+}
+async function cmpOpen(k, file) {
+  if (!isPdf(file)) { setStatus(view('compare'), `"${file.name}" is not a PDF.`, 'err'); return; }
+  try {
+    const bytes = new Uint8Array(await file.arrayBuffer()), js = await loadJs(bytes);
+    cmp[k] = { name: file.name, bytes, js, pages: js.numPages, size: bytes.length, thumb: await renderPage(js, 1, 90) };
+    cmpSlot(k); cmpReset();
+    if (cmp.a && cmp.b) runCompare();
+  } catch { setStatus(view('compare'), `Could not read "${file.name}". It may be damaged or password-protected.`, 'err'); }
+}
+['a', 'b'].forEach(k => makeDrop($(`#cmpDrop${k.toUpperCase()}`), { multiple: false, accept: 'application/pdf,.pdf', title: k === 'a' ? 'The original PDF' : 'The changed PDF', sub: 'Drop it here or click to choose', onFiles: l => l[0] && cmpOpen(k, l[0]) }));
+function cmpReset() { cmp.textDone = false; cmp.pageDiffs = null; cmp.page = 0; $('#cmpWork').hidden = !(cmp.a && cmp.b); $('#cmpText').innerHTML = ''; $('#cmpPagesList').innerHTML = ''; setStatus(view('compare'), ''); }
+// Myers' diff on two lists of lines: the shortest list of removals and additions that turns a into b
+function diffLines(a, b) {
+  const n = a.length, m = b.length, max = n + m, off = max + 1, trace = [];
+  let v = new Int32Array(2 * max + 3);
+  for (let d = 0; d <= max; d++) {
+    if (d * v.length > 4e7) return null;   // too different to trace in memory: the caller says so
+    trace.push(v.slice());
+    for (let k = -d; k <= d; k += 2) {
+      let x = (k === -d || (k !== d && v[off + k - 1] < v[off + k + 1])) ? v[off + k + 1] : v[off + k - 1] + 1, y = x - k;
+      while (x < n && y < m && a[x] === b[y]) { x++; y++; }
+      v[off + k] = x;
+      if (x >= n && y >= m) {
+        const out = []; let cx = n, cy = m;
+        for (let dd = d; dd > 0; dd--) {
+          const pv = trace[dd], kk = cx - cy, down = kk === -dd || (kk !== dd && pv[off + kk - 1] < pv[off + kk + 1]);
+          const pk = down ? kk + 1 : kk - 1, px = pv[off + pk], py = px - pk;
+          while (cx > px && cy > py) { out.push(['=', cx - 1, cy - 1]); cx--; cy--; }
+          if (down) out.push(['+', -1, cy - 1]); else out.push(['-', cx - 1, -1]);
+          cx = px; cy = py;
+        }
+        while (cx > 0 && cy > 0) { out.push(['=', cx - 1, cy - 1]); cx--; cy--; }
+        return out.reverse();
+      }
+    }
+  }
+  return [];
+}
+async function linesOf(doc) {
+  const out = [];
+  for (let n = 1; n <= doc.pages; n++) (await pageText(await doc.js.getPage(n))).split('\n').map(s => s.replace(/\s+/g, ' ').trim()).filter(Boolean).forEach(s => out.push({ s, page: n }));
+  return out;
+}
+async function runCompare() {
+  const p = view('compare'); $('#cmpWork').hidden = false;
+  setProgress(p, 'Reading both documents…', .3); await nextFrame();
+  const [A, B] = [await linesOf(cmp.a), await linesOf(cmp.b)];
+  setProgress(p, 'Comparing…', .7); await nextFrame();
+  const d = diffLines(A.map(x => x.s), B.map(x => x.s));
+  setStatus(p, '');
+  const box = $('#cmpText'); box.innerHTML = '';
+  if (!A.length && !B.length) { box.innerHTML = '<div class="empty-state"><b>No text to compare</b><span>These look like scans. Use Visual changes instead.</span></div>'; $('#cmpSummary').textContent = ''; return; }
+  if (!d) { box.innerHTML = '<div class="empty-state"><b>These documents are too different to compare line by line</b><span>Use Visual changes to see them page by page.</span></div>'; return; }
+  const add = d.filter(x => x[0] === '+').length, del = d.filter(x => x[0] === '-').length;
+  $('#cmpSummary').textContent = add || del ? `${plural(del, 'line')} removed · ${plural(add, 'line')} added` : 'No text differences';
+  if (!add && !del) { box.innerHTML = '<div class="empty-state"><span class="tile">' + icon('check') + '</span><b>The text is the same</b><span>Visual changes may still show differences in layout or pictures.</span></div>'; return; }
+  // runs of unchanged lines are folded, keeping two lines of context around each change
+  const keep = new Set(); d.forEach((x, i) => { if (x[0] !== '=') for (let k = i - 2; k <= i + 2; k++) keep.add(k); });
+  let html = '', hidden = 0;
+  const flush = () => { if (hidden) { html += `<div class="dl fold">${plural(hidden, 'line')} unchanged</div>`; hidden = 0; } };
+  d.forEach((x, i) => {
+    if (x[0] === '=' && !keep.has(i)) { hidden++; return; }
+    flush();
+    const L = x[0] === '+' ? B[x[2]] : A[x[1]];
+    html += `<div class="dl ${x[0] === '+' ? 'add' : x[0] === '-' ? 'del' : ''}"><span class="sign">${x[0] === '=' ? '' : x[0] === '+' ? '+' : '−'}</span><span class="pg">${x[0] === '+' ? 'new' : 'old'} p. ${L.page}</span><span class="tx">${escapeHtml(L.s)}</span></div>`;
+  });
+  flush(); box.innerHTML = html;
+}
+// visual: both pages drawn the same size; pixels that differ are painted red over a faded copy of the changed page
+async function drawPair(n, width) {
+  const r = async (doc) => { if (n > doc.pages) return null; const c = await renderPage(doc.js, n, width); return c; };
+  return [await r(cmp.a), await r(cmp.b)];
+}
+function diffCanvas(a, b) {
+  const w = b.width, h = b.height, out = document.createElement('canvas'); out.width = w; out.height = h;
+  const x = out.getContext('2d'); x.drawImage(b, 0, 0);
+  const bd = x.getImageData(0, 0, w, h); let ad = null;
+  if (a) { const t = document.createElement('canvas'); t.width = w; t.height = h; const tx = t.getContext('2d'); tx.drawImage(a, 0, 0, w, h); ad = tx.getImageData(0, 0, w, h).data; }
+  const d = bd.data; let changed = 0;
+  for (let i = 0; i < d.length; i += 4) {
+    const diff = !ad || Math.abs(d[i] - ad[i]) + Math.abs(d[i + 1] - ad[i + 1]) + Math.abs(d[i + 2] - ad[i + 2]) > 90;
+    if (diff) { changed++; d[i] = 229; d[i + 1] = 72; d[i + 2] = 77; }
+    else { d[i] = 255 - (255 - d[i]) * .35; d[i + 1] = 255 - (255 - d[i + 1]) * .35; d[i + 2] = 255 - (255 - d[i + 2]) * .35; }
+  }
+  x.putImageData(bd, 0, 0);
+  return { canvas: out, pct: changed / (w * h) * 100 };
+}
+async function runVisual() {
+  const p = view('compare'), N = Math.max(cmp.a.pages, cmp.b.pages);
+  if (!cmp.pageDiffs) {
+    cmp.pageDiffs = [];
+    for (let n = 1; n <= N; n++) {
+      setProgress(p, `Comparing page ${n} of ${N}`, n / N); await nextFrame();
+      const [a, b] = await drawPair(n, 160);
+      cmp.pageDiffs.push(!a || !b ? 100 : diffCanvas(a, b).pct);
+    }
+    setStatus(p, '');
+    const changed = cmp.pageDiffs.map((v, i) => [v, i]).filter(([v]) => v > 0.02);
+    $('#cmpPagesList').innerHTML = changed.length ? `<span class="meta">Pages with changes:</span>` + changed.map(([v, i]) => `<button class="chipbtn" data-p="${i}">${i + 1}</button>`).join('') : '<span class="meta">No visual differences found on any page.</span>';
+    $$('#cmpPagesList [data-p]').forEach(b => b.onclick = () => { cmp.page = +b.dataset.p; drawVisualPage(); });
+    if (changed.length) cmp.page = changed[0][1];
+  }
+  drawVisualPage();
+}
+async function drawVisualPage() {
+  const N = Math.max(cmp.a.pages, cmp.b.pages), n = cmp.page + 1;
+  $('#cmpPageLabel').textContent = `Page ${n} of ${N}`; $('#cmpPrev').disabled = n <= 1; $('#cmpNext').disabled = n >= N;
+  $$('#cmpPagesList [data-p]').forEach(b => b.classList.toggle('on', +b.dataset.p === cmp.page));
+  const W = Math.round(Math.min(560, ($('.cmp-visual').clientWidth / 2 || 400) - 20) * (devicePixelRatio || 1));
+  const [a, b] = await drawPair(n, W), A = $('#cmpCanvA'), B = $('#cmpCanvB');
+  A.innerHTML = ''; B.innerHTML = '';
+  if (a) A.appendChild(a); else A.innerHTML = '<span class="meta">No such page in the original</span>';
+  if (b) { const r = diffCanvas(a, b); B.appendChild(r.canvas); $('#cmpPct').textContent = r.pct > 0.02 ? `· ${r.pct < 1 ? '<1' : Math.round(r.pct)}% of the page changed` : '· no change'; }
+  else { B.innerHTML = '<span class="meta">No such page in the changed version</span>'; $('#cmpPct').textContent = ''; }
+}
+$('#cmpPrev').onclick = () => { cmp.page--; drawVisualPage(); };
+$('#cmpNext').onclick = () => { cmp.page++; drawVisualPage(); };
+$$('input[name=cmpMode]').forEach(r => r.onchange = () => { const v = radio('cmpMode') === 'visual'; $('#cmpText').hidden = v; $('#cmpVisual').hidden = !v; if (v) runVisual(); });
+
+/* ---------- OCR (tesseract.js, downloaded on first use) ---------- */
+const ocr = { worker: null, langs: '', result: null };
+function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('The reading engine could not be downloaded. Check your internet connection, then try again.')); document.head.appendChild(s); }); }
+async function ocrWorker(langs, p) {
+  if (!window.Tesseract) { setProgress(p, 'Downloading the reading engine…', .05); await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js'); }
+  if (ocr.worker && ocr.langs === langs) return ocr.worker;
+  if (ocr.worker) { await ocr.worker.terminate(); ocr.worker = null; }
+  setProgress(p, 'Downloading the language data…', .1);
+  ocr.worker = await Tesseract.createWorker(langs, 1, { logger: m => { if (ocr.onLog) ocr.onLog(m); } });
+  ocr.langs = langs; return ocr.worker;
+}
+const wordsOf = data => data.words && data.words.length ? data.words : (data.blocks || []).flatMap(b => b.paragraphs.flatMap(pp => pp.lines.flatMap(l => l.words)));
+$('#ocrGo').onclick = () => busy(view('ocr'), $('#ocrGo'), async () => {
+  const p = view('ocr'); if (!needFile(p)) return;
+  const langs = $$('#ocrLangs input:checked').map(i => i.value).join('+');
+  if (!langs) throw new Error('Choose at least one language.');
+  const pick = $('#ocrPages').value.trim() ? new Set(parseRanges($('#ocrPages').value, current.pages).flat()) : null;
+  $('#ocrResult').hidden = true;
+  const worker = await ocrWorker(langs, p), js = await loadJs(current.bytes), scale = 2.6, pages = [];
+  try {
+    const todo = []; for (let i = 0; i < current.pages; i++) if (!pick || pick.has(i)) todo.push(i);
+    for (let k = 0; k < todo.length; k++) {
+      const i = todo[k], page = await js.getPage(i + 1);
+      if ($('#ocrSkip').checked && (await page.getTextContent()).items.some(t => t.str && t.str.trim())) { pages.push({ i, skipped: true, text: await pageText(page) }); continue; }
+      ocr.onLog = m => { if (m.status === 'recognizing text') setProgress(p, `Reading page ${i + 1} (${k + 1} of ${todo.length})`, (k + m.progress) / todo.length); };
+      setProgress(p, `Reading page ${i + 1} (${k + 1} of ${todo.length})`, k / todo.length);
+      const vp = page.getViewport({ scale }), c = document.createElement('canvas'); c.width = Math.ceil(vp.width); c.height = Math.ceil(vp.height);
+      const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); await page.render({ canvasContext: x, viewport: vp }).promise;
+      const { data } = await worker.recognize(c);
+      pages.push({ i, text: (data.text || '').trim(), words: wordsOf(data).filter(w => w.text && w.text.trim() && w.confidence > 30).map(w => ({ t: w.text.trim(), b: w.bbox })), scale });
+    }
+  } finally { js.destroy(); ocr.onLog = null; }
+  ocr.result = { for: current, pages };
+  const read = pages.filter(x => !x.skipped), words = read.reduce((t, x) => t + x.words.length, 0);
+  $('#ocrOut').value = pages.map(x => `——— Page ${x.i + 1}${x.skipped ? ' (already had text)' : ''} ———\n\n${x.text}`).join('\n\n');
+  $('#ocrStats').textContent = `${plural(read.length, 'page')} read · ${words.toLocaleString()} words found`;
+  $('#ocrPdf').disabled = !words; $('#ocrResult').hidden = false; setStatus(p, read.length ? '' : 'Every chosen page already has text, so nothing needed reading. Turn off "Skip pages that already have text" to read them anyway.');
+});
+$('#ocrTxt').onclick = () => { if (ocr.result) download(new Blob(['﻿' + $('#ocrOut').value.replace(/\n/g, '\r\n')], { type: 'text/plain;charset=utf-8' }), base(current.name) + '-ocr.txt', 'text/plain'); };
+$('#ocrPdf').onclick = () => busy(view('ocr'), $('#ocrPdf'), async () => {
+  const p = view('ocr'); if (!needFile(p) || !ocr.result || ocr.result.for !== current) throw new Error('Read the pages first.');
+  // the original pages stay untouched; each word is laid over its place as invisible text, so it can be found and selected
+  const doc = await loadLib(current.bytes), font = await doc.embedFont(StandardFonts.Helvetica); let put = 0, skipped = 0;
+  for (const pg of ocr.result.pages) {
+    if (pg.skipped) continue;
+    const page = doc.getPage(pg.i), rot = norm(page.getRotation().angle);
+    for (const w of pg.words) {
+      try { font.encodeText(w.t); } catch { skipped++; continue; }
+      const x0 = w.b.x0 / pg.scale, x1 = w.b.x1 / pg.scale, y0 = w.b.y0 / pg.scale, y1 = w.b.y1 / pg.scale;
+      const unit = font.widthOfTextAtSize(w.t, 1); if (!unit) continue;
+      const sizeW = (x1 - x0) / unit, sizePt = Math.min(sizeW, (y1 - y0) * 1.6), [x, y] = seenToPdf(page, x0, y1 - (y1 - y0) * 0.18);
+      if (!(sizePt > 1)) continue;
+      page.drawText(w.t, { x, y, size: sizePt, font, opacity: 0, rotate: degrees(rot) }); put++;
+    }
+  }
+  if (!put) throw new Error('None of the words could be added to the PDF (only Latin-script text can be). Save the text file instead.');
+  await saved(p, await doc.save(), base(current.name) + '-searchable.pdf', `${put.toLocaleString()} words made searchable${skipped ? ` · ${skipped} non-Latin words are only in the text file` : ''}`);
+});
+
 /* ---------- SIGN ----------
    Signatures, dates and text are pictures (transparent PNG) placed on the page; positions are kept as fractions of the page,
    and turned into PDF points with the page's own viewport when saving (rotated pages included). */
@@ -2567,6 +3153,11 @@ const TOOLS = [
   ['header-footer', 'header', 'Header & footer', 'Add a title, date or page numbers to every page.'],
   ['redact', 'redact', 'Redact', 'Black out private details so they are gone for good.'],
   ['compress', 'shrink', 'Compress', 'Shrink a PDF so it is easy to email and upload.'],
+  ['bookmarks', 'bookmark', 'Bookmarks', 'Add a clickable table of contents to the PDF.'],
+  ['compare', 'compare', 'Compare', 'See what changed between two versions of a PDF.'],
+  ['extract-text', 'txt', 'Extract text', 'Copy all the text out of a PDF, or save it as a file.'],
+  ['extract-images', 'imgs', 'Extract images', 'Save every picture inside a PDF.'],
+  ['ocr', 'ocr', 'Scan to text (OCR)', 'Make scanned pages searchable and copyable.'],
   ['page-numbers', 'hash', 'Page numbers', 'Add "Page 1 of 10" or plain numbers to every page.'],
   ['watermark', 'stamp', 'Watermark', 'Stamp CONFIDENTIAL, DRAFT or your own text.'],
   ['info', 'info', 'Document info', 'Edit the title, author and keywords inside a PDF.'],
