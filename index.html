@@ -195,12 +195,12 @@
   .form label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; color: var(--muted); min-width: 0; }
   .form .wide { grid-column: 1 / -1; }
   .form .row { display: flex; justify-content: space-between; align-items: baseline; }
-  input[type=text], input[type=number], select { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink);
+  input[type=text], input[type=password], input[type=search], input[type=number], select { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink);
     font: 14.5px var(--font); transition: border-color .2s, box-shadow .2s, background .2s; appearance: none; -webkit-appearance: none; }
   select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat; background-position: right 12px center; padding-right: 34px; cursor: pointer; }
-  input[type=text]:hover, input[type=number]:hover, select:hover { border-color: var(--line-2); }
-  input[type=text]:focus, input[type=number]:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); background: var(--surface); }
+  input[type=text]:hover, input[type=password]:hover, input[type=search]:hover, input[type=number]:hover, select:hover { border-color: var(--line-2); }
+  input[type=text]:focus, input[type=password]:focus, input[type=search]:focus, input[type=number]:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); background: var(--surface); }
   input:disabled { opacity: .5; }
   input[type=color] { width: 100%; height: 42px; padding: 4px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); cursor: pointer; }
   input[type=range] { width: 100%; accent-color: var(--accent); }
@@ -521,6 +521,57 @@
   .chip input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
   @media (max-width: 680px) { .cmp-slots, .cmp-visual { grid-template-columns: minmax(0, 1fr); } .bmlist li { margin-left: calc(var(--lvl) * 14px); flex-wrap: wrap; } .bmt { flex-basis: 100%; } .dl { grid-template-columns: 18px minmax(0, 1fr); } .dl .pg { display: none; } }
 
+  /* ---------- phase 4: passwords, hidden data, guides, search ---------- */
+  .pw { position: relative; display: block; }
+  .pw input { padding-right: 44px; }
+  .pw .ibtn { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); }
+  .pw .ibtn:active { transform: translateY(-50%) scale(.9); }
+  .strength { display: flex; align-items: center; gap: 12px; min-height: 18px; margin-top: -6px; }
+  .strength i { flex: 0 0 160px; height: 6px; border-radius: 99px; background: var(--line); position: relative; overflow: hidden; }
+  .strength i::after { content: ""; position: absolute; inset: 0; width: 0; border-radius: inherit; background: var(--danger); transition: width .4s var(--ease), background .3s; }
+  .strength[data-s="1"] i::after { width: 25%; } .strength[data-s="2"] i::after { width: 50%; background: #f59e0b; }
+  .strength[data-s="3"] i::after { width: 75%; background: #22c55e; } .strength[data-s="4"] i::after { width: 100%; background: var(--ok); }
+  .strength[data-s=""] i, .strength:not([data-s]) i { opacity: 0; }
+  .strength span { font-size: 13px; font-weight: 500; color: var(--muted); }
+  .perms { display: flex; flex-direction: column; gap: 14px; padding: 14px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); animation: rise .3s var(--ease) both; }
+  .perms > label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; color: var(--muted); }
+  #unlockFile .pthumb { color: var(--accent); }
+  .found { display: flex; flex-direction: column; gap: 8px; }
+  .finding { display: flex; align-items: flex-start; gap: 12px; padding: 14px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); cursor: pointer; box-shadow: var(--shadow-1);
+    animation: rise .35s var(--ease) both; animation-delay: calc(var(--i) * 50ms); transition: border-color .2s, box-shadow .2s; }
+  .finding:hover { border-color: var(--line-2); box-shadow: var(--shadow-2); }
+  .finding input { position: absolute; opacity: 0; }
+  .finding .tick { width: 22px; height: 22px; flex: none; border-radius: 7px; border: 1.5px solid var(--line-2); display: grid; place-items: center; color: #fff; transition: background .2s, border-color .2s; }
+  .finding .tick svg { width: 14px; height: 14px; stroke-width: 3; opacity: 0; transform: scale(.5); transition: opacity .2s, transform .25s var(--spring); }
+  .finding:has(input:checked) .tick { background: var(--accent); border-color: var(--accent); } .finding:has(input:checked) .tick svg { opacity: 1; transform: none; }
+  .finding:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .finding b { display: block; font-size: 15px; } .finding .meta { white-space: normal; font-family: var(--font); font-size: 13.5px; overflow-wrap: anywhere; }
+  .guide { border-radius: var(--r); background: color-mix(in srgb, var(--accent-soft) 55%, var(--surface)); border: 1px solid color-mix(in srgb, var(--accent) 16%, var(--line)); overflow: hidden; margin-top: -6px; }
+  .guide summary { display: flex; align-items: center; gap: 10px; padding: 11px 14px; cursor: pointer; list-style: none; font-weight: 600; font-size: 14px; color: var(--ink); user-select: none; }
+  .guide summary::-webkit-details-marker { display: none; }
+  .guide summary > svg { color: var(--accent); }
+  .guide summary .caret { margin-left: auto; display: grid; color: var(--muted); transition: transform .3s var(--ease); }
+  .guide[open] summary .caret { transform: rotate(180deg); }
+  .guide-body { padding: 0 16px 14px 16px; animation: rise .3s var(--ease) both; }
+  .guide ol { margin: 0; padding: 0; list-style: none; counter-reset: g; display: grid; gap: 8px; }
+  .guide li { counter-increment: g; display: flex; gap: 10px; align-items: baseline; font-size: 14px; line-height: 1.5; }
+  .guide li::before { content: counter(g); flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); font: 700 12px var(--mono); transform: translateY(-1px); }
+  .guide .tip { margin: 12px 0 0; display: flex; gap: 8px; font-size: 13.5px; color: var(--muted); padding-top: 10px; border-top: 1px dashed color-mix(in srgb, var(--accent) 22%, var(--line)); }
+  .guide .tip b { color: var(--ink); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; padding-top: 1px; }
+  .howto { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; counter-reset: h; }
+  .howto li { counter-increment: h; display: flex; flex-direction: column; gap: 3px; padding: 14px 16px 14px 54px; position: relative; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-1); animation: rise .45s var(--ease) both; }
+  .howto li:nth-child(2) { animation-delay: 60ms; } .howto li:nth-child(3) { animation-delay: 120ms; }
+  .howto li::before { content: counter(h); position: absolute; left: 14px; top: 14px; width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font: 700 14px var(--mono); }
+  .howto b { font-size: 14.5px; } .howto span { font-size: 13.5px; color: var(--muted); line-height: 1.45; }
+  .search { position: relative; display: flex; align-items: center; }
+  .search > svg { position: absolute; left: 16px; color: var(--muted); width: 19px; height: 19px; pointer-events: none; }
+  .search input { width: 100%; padding: 15px 52px 15px 46px; border-radius: 14px; font-size: 15.5px; background: var(--surface); box-shadow: var(--shadow-1); -webkit-appearance: none; }
+  .search input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+  .search kbd { position: absolute; right: 14px; font: 600 12px var(--mono); color: var(--muted); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; padding: 2px 7px; background: var(--surface-2); }
+  .card[hidden] { display: none !important; }
+  #noTools { grid-column: 1 / -1; }
+  @media (max-width: 760px) { .howto { grid-template-columns: minmax(0, 1fr); } .search kbd { display: none; } .strength i { flex-basis: 100px; } }
+
   /* ---------- phones ---------- */
   @media (max-width: 860px) {
     .app { grid-template-columns: minmax(0, 1fr); }
@@ -605,6 +656,11 @@
   <symbol id="i-ocr" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 8h8M7 12h10M7 16h6"/></symbol>
   <symbol id="i-indent" viewBox="0 0 24 24"><path d="M21 6H11M21 12H11M21 18H11M3 8l4 4-4 4"/></symbol>
   <symbol id="i-outdent" viewBox="0 0 24 24"><path d="M21 6H11M21 12H11M21 18H11M7 8l-4 4 4 4"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-unlock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/></symbol>
+  <symbol id="i-broom" viewBox="0 0 24 24"><path d="m14 4-1 7M8.5 11h9l1.5 9H7Z"/><path d="M10 15v5M14 15v5"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
   <symbol id="i-crop" viewBox="0 0 24 24"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></symbol>
@@ -642,6 +698,10 @@
       <a href="#watermark" data-view="watermark"><svg class="i"><use href="#i-stamp"/></svg>Watermark</a>
       <a href="#redact" data-view="redact"><svg class="i"><use href="#i-redact"/></svg>Redact</a>
       <a href="#info" data-view="info"><svg class="i"><use href="#i-info"/></svg>Document info</a>
+      <div class="group">Protect</div>
+      <a href="#protect" data-view="protect"><svg class="i"><use href="#i-lock"/></svg>Password protect</a>
+      <a href="#unlock" data-view="unlock"><svg class="i"><use href="#i-unlock"/></svg>Remove password</a>
+      <a href="#clean" data-view="clean"><svg class="i"><use href="#i-broom"/></svg>Remove hidden data</a>
       <div class="group">Shrink and convert</div>
       <a href="#compress" data-view="compress"><svg class="i"><use href="#i-shrink"/></svg>Compress</a>
       <a href="#pdf-to-images" data-view="pdf-to-images"><svg class="i"><use href="#i-toimg"/></svg>PDF to images</a>
@@ -663,6 +723,12 @@
         <h1>Every PDF job,<br><em>one place.</em></h1>
         <p>Merge, split, reorder, number, watermark and convert PDFs in seconds. No account, no waiting on a server.</p>
       </div>
+      <ol class="howto">
+        <li><b>Pick a tool</b><span>Search below, or choose from the list on the left.</span></li>
+        <li><b>Add your PDF</b><span>Drop it in the box. It stays open in every tool, so you can do several things in a row.</span></li>
+        <li><b>Save</b><span>Your new file downloads. Click "Keep editing it" to carry on with another tool.</span></li>
+      </ol>
+      <label class="search"><svg class="i"><use href="#i-search"/></svg><input type="search" id="toolSearch" placeholder="What do you want to do? Try &quot;smaller&quot;, &quot;sign&quot; or &quot;password&quot;" aria-label="Search the tools"><kbd>/</kbd></label>
       <div class="cards" id="cards"></div>
     </section>
 
@@ -878,6 +944,61 @@
       <div class="preview" data-preview="numbers"></div>
       </div>
       <div class="bar"><span class="grow"></span><button class="btn primary" id="numGo">Add page numbers</button></div>
+      <div class="status"></div>
+    </section>
+
+    <!-- PROTECT -->
+    <section class="view" id="view-protect" hidden>
+      <div class="head"><span class="tile"><svg class="i"><use href="#i-lock"/></svg></span><div><h1>Password protect</h1><p>Lock a PDF so it only opens with the password you choose.</p></div></div>
+      <div data-src></div>
+      <div class="form">
+        <label>Password to open the PDF
+          <span class="pw"><input type="password" id="protPw" autocomplete="new-password"><button class="ibtn" type="button" data-eye="protPw" aria-label="Show password"><svg class="i"><use href="#i-eye"/></svg></button></span>
+        </label>
+        <label>Type it again
+          <span class="pw"><input type="password" id="protPw2" autocomplete="new-password"><button class="ibtn" type="button" data-eye="protPw2" aria-label="Show password"><svg class="i"><use href="#i-eye"/></svg></button></span>
+        </label>
+        <div class="wide strength" id="protStrength"><i></i><span></span></div>
+        <label class="switch wide"><input type="checkbox" id="protRestrict">Also limit what people can do once it is open</label>
+        <div class="wide perms" id="protPerms" hidden>
+          <div class="chips">
+            <label class="chip"><input type="checkbox" id="permPrint" checked><span>Print</span></label>
+            <label class="chip"><input type="checkbox" id="permCopy"><span>Copy text and pictures</span></label>
+            <label class="chip"><input type="checkbox" id="permEdit"><span>Change the document</span></label>
+            <label class="chip"><input type="checkbox" id="permComment"><span>Add comments</span></label>
+            <label class="chip"><input type="checkbox" id="permForms" checked><span>Fill in forms</span></label>
+          </div>
+          <label>Owner password (lets you change these limits later; must be different)
+            <span class="pw"><input type="password" id="protOwner" autocomplete="new-password"><button class="ibtn" type="button" data-eye="protOwner" aria-label="Show password"><svg class="i"><use href="#i-eye"/></svg></button></span>
+          </label>
+        </div>
+        <p class="hint wide">The file is encrypted with AES-256. Keep the password somewhere safe: nobody, including this site, can recover it for you.</p>
+      </div>
+      <div class="bar"><span class="grow"></span><button class="btn primary" id="protGo"><svg class="i"><use href="#i-lock"/></svg>Protect PDF</button></div>
+      <div class="status"></div>
+    </section>
+
+    <!-- UNLOCK -->
+    <section class="view" id="view-unlock" hidden>
+      <div class="head"><span class="tile"><svg class="i"><use href="#i-unlock"/></svg></span><div><h1>Remove password</h1><p>Make an unlocked copy of a PDF you have the password for.</p></div></div>
+      <div class="drop" id="unlockDrop"></div>
+      <div class="cmp-file" id="unlockFile" hidden></div>
+      <div class="form" id="unlockForm" hidden>
+        <label class="wide" id="unlockPwLabel">Password
+          <span class="pw"><input type="password" id="unlockPw" autocomplete="current-password"><button class="ibtn" type="button" data-eye="unlockPw" aria-label="Show password"><svg class="i"><use href="#i-eye"/></svg></button></span>
+        </label>
+        <p class="hint wide" id="unlockNote"></p>
+      </div>
+      <div class="bar" id="unlockBar" hidden><span class="grow"></span><button class="btn primary" id="unlockGo"><svg class="i"><use href="#i-unlock"/></svg>Unlock PDF</button></div>
+      <div class="status"></div>
+    </section>
+
+    <!-- CLEAN -->
+    <section class="view" id="view-clean" hidden>
+      <div class="head"><span class="tile"><svg class="i"><use href="#i-broom"/></svg></span><div><h1>Remove hidden data</h1><p>Find and remove the details a PDF carries without showing them, before you share it.</p></div></div>
+      <div data-src></div>
+      <div class="found" id="cleanFound"></div>
+      <div class="bar" id="cleanBar" hidden><span class="meta" id="cleanCount"></span><span class="grow"></span><button class="btn primary" id="cleanGo">Remove selected</button></div>
       <div class="status"></div>
     </section>
 
@@ -1438,7 +1559,15 @@ singlePicker.onchange = () => { if (singlePicker.files[0]) openSingle(singlePick
 async function openSingle(f) {
   if (!isPdf(f)) { setStatus(view(active), `"${f.name}" is not a PDF. Choose a .pdf file.`, 'err'); return; }
   try { await setCurrent(f.name, new Uint8Array(await f.arrayBuffer())); }
-  catch { setStatus(view(active), `Could not read "${f.name}". It may be damaged or password-protected.`, 'err'); }
+  catch (e) {
+    if (e && e.name === 'PasswordException') {
+      // a locked PDF: offer to unlock it, carrying the file over
+      setStatus(view(active), `"${f.name}" is locked with a password. Unlock it first, then come back.`, 'err');
+      const b = document.createElement('button'); b.className = 'btn small'; b.innerHTML = `${icon('unlock')}Remove the password`;
+      b.onclick = () => { go('unlock'); unlockOpen(f); };
+      $('.status .msg', view(active)).appendChild(b);
+    } else setStatus(view(active), `Could not read "${f.name}". It may be damaged.`, 'err');
+  }
 }
 async function setCurrent(name, bytes) {
   const js = await loadJs(bytes);
@@ -1461,6 +1590,7 @@ function refreshActive() {
   if (active === 'annotate') annEd.load();
   if (active === 'redact') redEd.load();
   if (active === 'bookmarks') buildBookmarks();
+  if (active === 'clean') buildClean();
   if (active === 'extract-text') buildText();
   if (active === 'extract-images') buildImages();
   if (active === 'ocr' && ocr.result && ocr.result.for !== current) { ocr.result = null; $('#ocrResult').hidden = true; }
@@ -2728,6 +2858,191 @@ $('#ocrPdf').onclick = () => busy(view('ocr'), $('#ocrPdf'), async () => {
   await saved(p, await doc.save(), base(current.name) + '-searchable.pdf', `${put.toLocaleString()} words made searchable${skipped ? ` · ${skipped} non-Latin words are only in the text file` : ''}`);
 });
 
+/* ---------- PASSWORDS: a second copy of pdf-lib that can encrypt (@cantoo/pdf-lib), loaded only for these tools ----------
+   It installs itself as window.PDFLib too, so the main one is put back the moment it has loaded. */
+let CryptLib = null;
+async function cryptLib() {
+  if (CryptLib) return CryptLib;
+  const main = window.PDFLib;
+  try { await loadScript('https://cdn.jsdelivr.net/npm/@cantoo/pdf-lib@2.11.1/dist/pdf-lib.min.js'); }
+  catch { await loadScript('lib/pdf-lib-crypt.min.js'); }
+  CryptLib = window.PDFLib; window.PDFLib = main;
+  return CryptLib;
+}
+$$('[data-eye]').forEach(b => b.onclick = () => { const i = $('#' + b.dataset.eye), show = i.type === 'password'; i.type = show ? 'text' : 'password'; $('use', b).setAttribute('href', show ? '#i-x' : '#i-eye'); b.setAttribute('aria-label', show ? 'Hide password' : 'Show password'); });
+function pwScore(p) {
+  if (p.length < 6) return 0;
+  const kinds = [/[a-z]/, /[A-Z]/, /\d/, /[^\w]/].filter(r => r.test(p)).length;
+  return clamp((p.length >= 12 ? 2 : p.length >= 9 ? 1 : 0) + (kinds >= 3 ? 2 : kinds === 2 ? 1 : 0), 1, 4);
+}
+$('#protPw').addEventListener('input', () => {
+  const s = pwScore($('#protPw').value), el = $('#protStrength');
+  el.dataset.s = $('#protPw').value ? s : '';
+  $('span', el).textContent = $('#protPw').value ? ['Too short: use at least 6 characters', 'Weak', 'OK', 'Good', 'Strong'][s] : '';
+});
+$('#protRestrict').onchange = () => { $('#protPerms').hidden = !$('#protRestrict').checked; };
+$('#protGo').onclick = () => busy(view('protect'), $('#protGo'), async () => {
+  const p = view('protect'); if (!needFile(p)) return;
+  const pw = $('#protPw').value, restrict = $('#protRestrict').checked, owner = $('#protOwner').value;
+  if (pw.length < 6) { $('#protPw').focus(); throw new Error('Use a password of at least 6 characters.'); }
+  if (pw !== $('#protPw2').value) { $('#protPw2').focus(); throw new Error('The two passwords are different. Type the same password in both boxes.'); }
+  if (restrict && !owner) { $('#protOwner').focus(); throw new Error('Choose an owner password, so you can change the limits later.'); }
+  if (restrict && owner === pw) throw new Error('The owner password must be different from the password to open the PDF.');
+  setProgress(p, 'Encrypting…', .4); await nextFrame();
+  const C = await cryptLib(), doc = await C.PDFDocument.load(current.bytes, { ignoreEncryption: true, updateMetadata: false });
+  const on = id => $('#' + id).checked;
+  doc.encrypt({ userPassword: pw, ownerPassword: restrict ? owner : pw, permissions: restrict
+    ? { printing: on('permPrint') ? 'highResolution' : undefined, copying: on('permCopy'), modifying: on('permEdit'), annotating: on('permComment'), fillingForms: on('permForms') || on('permEdit'), contentAccessibility: true, documentAssembly: on('permEdit') }
+    : { printing: 'highResolution', copying: true, modifying: true, annotating: true, fillingForms: true, contentAccessibility: true, documentAssembly: true } });
+  const bytes = await doc.save(), name = base(current.name) + '-protected.pdf';
+  setStatus(p, '');
+  await download(bytes, name, 'application/pdf', sn => toast(`Saved ${sn}`, `Locked with AES-256${restrict ? ', with limits' : ''} · ${size(bytes.length)}`));
+});
+
+/* ---------- REMOVE PASSWORD ---------- */
+const unl = { file: null, bytes: null, needsPw: true };
+async function unlockOpen(f) {
+  const p = view('unlock'); setStatus(p, '');
+  if (!isPdf(f)) { setStatus(p, `"${f.name}" is not a PDF.`, 'err'); return; }
+  const bytes = new Uint8Array(await f.arrayBuffer());
+  let needsPw = false, locked = true;
+  try { const js = await loadJs(bytes); js.destroy(); } catch (e) { if (e && e.name === 'PasswordException') needsPw = true; else { setStatus(p, `Could not read "${f.name}". It may be damaged.`, 'err'); return; } }
+  if (!needsPw) { const C = await cryptLib(); try { await C.PDFDocument.load(bytes, { updateMetadata: false }); locked = false; } catch { locked = true; } }
+  Object.assign(unl, { file: f, bytes, needsPw });
+  const box = $('#unlockFile'); box.hidden = false; $('#unlockDrop').hidden = true;
+  box.innerHTML = `<span class="pthumb">${icon(needsPw ? 'lock' : locked ? 'lock' : 'unlock')}</span><span class="who"><div class="name"></div><div class="meta">${size(bytes.length)} · ${needsPw ? 'needs a password to open' : locked ? 'opens freely, but has limits' : 'not locked'}</div></span><button class="ibtn" aria-label="Choose another file">${icon('x')}</button>`;
+  $('.name', box).textContent = f.name;
+  $('button', box).onclick = () => { unl.file = null; box.hidden = true; $('#unlockDrop').hidden = false; $('#unlockForm').hidden = $('#unlockBar').hidden = true; setStatus(p, ''); };
+  if (!needsPw && !locked) { $('#unlockForm').hidden = $('#unlockBar').hidden = true; setStatus(p, 'This PDF has no password or limits, so there is nothing to remove.', 'ok'); return; }
+  $('#unlockForm').hidden = $('#unlockBar').hidden = false; $('#unlockPwLabel').hidden = !needsPw;
+  $('#unlockNote').textContent = needsPw ? 'Type the password you use to open this PDF. The unlocked copy opens without one.' : 'This PDF opens without a password but stops people from printing, copying or changing it. The unlocked copy has no limits.';
+  if (needsPw) setTimeout(() => $('#unlockPw').focus(), 50);
+}
+makeDrop($('#unlockDrop'), { multiple: false, accept: 'application/pdf,.pdf', title: 'Drop the locked PDF here', sub: 'You will need its password.', onFiles: l => l[0] && unlockOpen(l[0]) });
+$('#unlockPw').addEventListener('keydown', e => { if (e.key === 'Enter') $('#unlockGo').click(); });
+$('#unlockGo').onclick = () => busy(view('unlock'), $('#unlockGo'), async () => {
+  const p = view('unlock'); if (!unl.file) throw new Error('Drop the locked PDF first.');
+  const pw = unl.needsPw ? $('#unlockPw').value : '';
+  if (unl.needsPw && !pw) { $('#unlockPw').focus(); throw new Error('Type the password first.'); }
+  setProgress(p, 'Unlocking…', .4); await nextFrame();
+  const C = await cryptLib(); let doc;
+  try { doc = await C.PDFDocument.load(unl.bytes, { password: pw, updateMetadata: false }); }
+  catch (e) {
+    if (/password/i.test(e.message)) { const i = $('#unlockPw'); i.classList.add('bad'); i.style.animation = 'none'; void i.offsetWidth; i.style.animation = 'shake .4s var(--ease)'; i.select(); throw new Error('That password is not right. Check capital letters, then try again.'); }
+    throw new Error('This PDF could not be unlocked: ' + e.message);
+  }
+  $('#unlockPw').classList.remove('bad');
+  // the decrypted document is written out fresh, without its encryption settings
+  const N = C.PDFName, ctx = doc.context;
+  for (const [ref, obj] of ctx.enumerateIndirectObjects()) { const d = obj.dict || obj; if (d && typeof d.get === 'function' && d.get(N.of('Filter')) === N.of('Standard') && d.has(N.of('O')) && d.has(N.of('U'))) ctx.delete(ref); }
+  ctx.security = undefined; ctx.trailerInfo.Encrypt = undefined;
+  // the document details, read by pdf.js (which decrypts them properly), carried over
+  try {
+    const js = await pdfjsLib.getDocument({ data: unl.bytes.slice(), password: pw }).promise, { info } = await js.getMetadata(); js.destroy();
+    if (info.Title) doc.setTitle(info.Title); if (info.Author) doc.setAuthor(info.Author); if (info.Subject) doc.setSubject(info.Subject);
+  } catch {}
+  const bytes = await doc.save({ rewrite: true }), name = unl.file.name.replace(/\.pdf$/i, '') + '-unlocked.pdf';
+  setStatus(p, '');
+  await download(bytes, name, 'application/pdf', sn => toast(`Saved ${sn}`, `No password needed any more · ${size(bytes.length)}`, { label: 'Keep editing it', fn: () => useResult(bytes, sn) }));
+});
+
+/* ---------- REMOVE HIDDEN DATA ---------- */
+const COMMENT_TYPES = ['Text', 'FreeText', 'Highlight', 'Underline', 'StrikeOut', 'Squiggly', 'Ink', 'Square', 'Circle', 'Line', 'Polygon', 'PolyLine', 'Stamp', 'Caret', 'Popup', 'Sound'];
+const cln = { for: null, found: [] };
+function annotsOf(doc, pg) { const a = pg.node.lookup(PDFLib.PDFName.of('Annots')); return a instanceof PDFLib.PDFArray ? a : null; }
+const subtypeOf = (doc, ref) => { const d = doc.context.lookup(ref); const s = d && d.get && d.get(PDFLib.PDFName.of('Subtype')); return s ? s.asString().slice(1) : ''; };
+async function buildClean() {
+  $('#cleanBar').hidden = !current; if (!current) { $('#cleanFound').innerHTML = ''; return; }
+  if (cln.for === current) return; cln.for = current;
+  const N = PDFLib.PDFName, doc = await loadLib(current.bytes, { updateMetadata: false }), cat = doc.catalog, found = [];
+  const details = [['Title', doc.getTitle()], ['Author', doc.getAuthor()], ['Subject', doc.getSubject()], ['Keywords', doc.getKeywords()], ['Made with', doc.getCreator()], ['Producer', doc.getProducer()]].filter(([, v]) => v);
+  if (details.length || doc.getCreationDate()) found.push({ id: 'info', label: 'Document details', detail: details.length ? details.map(([k, v]) => `${k}: ${v}`).join(' · ') : 'Creation and change dates', on: true });
+  if (cat.get(N.of('Metadata'))) found.push({ id: 'xmp', label: 'Extra hidden details (XMP)', detail: 'A block of details apps add: editing history, tools used, sometimes names.', on: true });
+  const names = cat.lookup(N.of('Names'));
+  const hasJs = (names && names.get && names.get(N.of('JavaScript'))) || cat.get(N.of('AA')) || (() => { const oa = cat.lookup(N.of('OpenAction')); return oa && oa.get && oa.get(N.of('S')) === N.of('JavaScript'); })();
+  if (hasJs) found.push({ id: 'js', label: 'Scripts', detail: 'Code that runs when the PDF is opened.', on: true });
+  const ef = names && names.lookup && names.lookup(N.of('EmbeddedFiles'));
+  let fileNames = [];
+  if (ef && ef.lookup) { const arr = ef.lookup(N.of('Names')); if (arr && arr.size) for (let i = 0; i < arr.size(); i += 2) { try { fileNames.push(arr.lookup(i).decodeText()); } catch { fileNames.push('a file'); } } }
+  let attachAnnots = 0, comments = 0;
+  doc.getPages().forEach(pg => { const a = annotsOf(doc, pg); if (!a) return; for (let i = 0; i < a.size(); i++) { const t = subtypeOf(doc, a.get(i)); if (t === 'FileAttachment') attachAnnots++; else if (COMMENT_TYPES.includes(t) && t !== 'Popup') comments++; } });
+  if (fileNames.length || attachAnnots) found.push({ id: 'files', label: 'Attached files', detail: (fileNames.length ? fileNames.join(', ') : '') + (attachAnnots ? `${fileNames.length ? ' · ' : ''}${plural(attachAnnots, 'file')} pinned to pages` : ''), on: true });
+  if (comments) found.push({ id: 'comments', label: 'Comments and markups', detail: `${plural(comments, 'note')}, highlight or drawing others can open.`, on: true });
+  if (cat.get(N.of('PieceInfo')) || doc.getPages().some(pg => pg.node.get(N.of('PieceInfo')))) found.push({ id: 'piece', label: 'App editing data', detail: 'Private data left by the app that made the PDF.', on: true });
+  cln.found = found; drawClean();
+}
+function drawClean() {
+  const box = $('#cleanFound');
+  if (!cln.found.length) { box.innerHTML = `<div class="empty-state"><span class="tile">${icon('check')}</span><b>Nothing hidden found</b><span>This PDF has no document details, scripts, attachments or comments to remove.</span></div>`; $('#cleanBar').hidden = true; return; }
+  box.innerHTML = cln.found.map((f, i) => `<label class="finding" style="--i:${i}"><input type="checkbox" data-id="${f.id}" ${f.on ? 'checked' : ''}><span class="tick">${icon('check')}</span><span><b>${f.label}</b><span class="meta"></span></span></label>`).join('');
+  $$('.finding', box).forEach((el, i) => { $('.meta', el).textContent = cln.found[i].detail; $('input', el).onchange = e => { cln.found[i].on = e.target.checked; countClean(); }; });
+  $('#cleanBar').hidden = false; countClean();
+}
+function countClean() { const n = cln.found.filter(f => f.on).length; $('#cleanCount').textContent = `${n} of ${plural(cln.found.length, 'kind')} of hidden data selected`; $('#cleanGo').disabled = !n; }
+$('#cleanGo').onclick = () => busy(view('clean'), $('#cleanGo'), async () => {
+  const p = view('clean'); if (!needFile(p)) return;
+  const N = PDFLib.PDFName, doc = await loadLib(current.bytes, { updateMetadata: false }), cat = doc.catalog, ctx = doc.context, on = new Set(cln.found.filter(f => f.on).map(f => f.id));
+  const names = cat.lookup(N.of('Names'));
+  if (on.has('info')) { const info = doc.getInfoDict(); [...info.keys()].forEach(k => info.delete(k)); }
+  if (on.has('xmp')) cat.delete(N.of('Metadata'));
+  if (on.has('js')) {
+    if (names && names.delete) names.delete(N.of('JavaScript'));
+    cat.delete(N.of('AA')); const oa = cat.lookup(N.of('OpenAction')); if (oa && oa.get && oa.get(N.of('S')) === N.of('JavaScript')) cat.delete(N.of('OpenAction'));
+    doc.getPages().forEach(pg => pg.node.delete(N.of('AA')));
+  }
+  if (on.has('files')) { if (names && names.delete) names.delete(N.of('EmbeddedFiles')); cat.delete(N.of('AF')); }
+  if (on.has('piece')) { cat.delete(N.of('PieceInfo')); doc.getPages().forEach(pg => pg.node.delete(N.of('PieceInfo'))); }
+  if (on.has('files') || on.has('comments')) doc.getPages().forEach(pg => {
+    const a = annotsOf(doc, pg); if (!a) return;
+    const keep = []; for (let i = 0; i < a.size(); i++) { const t = subtypeOf(doc, a.get(i)); if ((on.has('files') && t === 'FileAttachment') || (on.has('comments') && COMMENT_TYPES.includes(t))) continue; keep.push(a.get(i)); }
+    pg.node.set(N.of('Annots'), ctx.obj(keep));
+  });
+  if (names && names.keys && ![...names.keys()].length) cat.delete(N.of('Names'));
+  await saved(p, await doc.save(), base(current.name) + '-clean.pdf', `${plural(on.size, 'kind')} of hidden data removed`);
+});
+
+/* ---------- a guide on every tool ---------- */
+const GUIDES = {
+  merge: [['Drop two or more PDFs in the box, or click it to choose them.', 'Drag the rows (or use the arrows) to put the files in order.', 'Optional: in a file\'s Pages box, type only the pages you want, like 1-3, 5.', 'Type a name and click Merge PDFs.'], 'Leave "Add a bookmark for each file" on to jump between the original files in your PDF reader.'],
+  'images-to-pdf': [['Drop your photos or scans in the box.', 'Put them in order: each picture becomes one page.', 'Choose the page size, orientation and margin.', 'Click Make PDF.'], 'Phone photos are turned the right way up for you.'],
+  organize: [['Open a PDF.', 'Drag pages to change their order. Click pages to select them (Shift+click selects a range).', 'Rotate, duplicate or remove the selected pages, or add a blank page or another PDF.', 'Click Save PDF.'], 'Made a mistake? Ctrl+Z undoes it. Double-click any page to see it large.'],
+  split: [['Open a PDF.', 'Choose how to split it: every page, every few pages, by ranges, extract, or by file size.', 'If asked, type the pages (like 1-3, 5) or the number.', 'Click Split PDF.'], 'When several files are made, they come together in one zip file.'],
+  crop: [['Open a PDF.', 'Choose: trim the white edges, cut margins, or change the paper size.', 'Check the live preview on the right.', 'Click Save PDF.'], 'Use the Pages box to change only some pages.'],
+  bookmarks: [['Open a PDF.', 'Click Add bookmark, type a title and the page it should open.', 'Use the arrow buttons to put a bookmark inside the one above it.', 'Click Save PDF.'], 'Bookmarks the PDF already has are loaded so you can change them.'],
+  compare: [['Drop the original PDF on the left and the changed one on the right.', 'Text changes lists what was removed (red) and added (green).', 'Visual changes shows each page with the differences painted red.'], 'Comparing scans? Use Visual changes: scans have no text to compare.'],
+  sign: [['Open the PDF to sign.', 'Click Create signature, then draw it, type it or upload a photo of it.', 'Drag it into place; drag its corner to resize. Add a date or text if needed.', 'Click Save signed PDF.'], 'Your signature is remembered on this device only, never uploaded.'],
+  'fill-forms': [['Open a fillable PDF form.', 'Fill in the boxes, grouped by page.', 'Optional: turn on "Lock the answers" so they cannot be changed.', 'Click Save filled PDF.'], 'No boxes found? Use Sign › Add text to write anywhere on the page.'],
+  annotate: [['Open a PDF.', 'Pick a tool above the page: text, highlighter, box, circle, arrow, line or pen.', 'Draw on the page. For text, click where it goes and type.', 'Use the Select tool to move, resize or delete, then click Save PDF.'], 'Ctrl+Z undoes. Hold Shift while drawing a line or arrow to keep it straight.'],
+  'header-footer': [['Open a PDF.', 'Type text in any of the six spots: left, center or right, at the top or bottom.', 'Use {page}, {pages}, {date} or {file} to fill them in automatically. Check the preview.', 'Click Add header & footer.'], 'Use the Pages box to skip pages, for example 2- to start on page 2.'],
+  'page-numbers': [['Open a PDF.', 'Choose where the number goes and how it looks.', 'Check the live preview.', 'Click Add page numbers.'], 'Turn on "Skip the cover page" so numbering starts on page 2.'],
+  watermark: [['Open a PDF.', 'Choose text (like CONFIDENTIAL) or an image such as your logo.', 'Set the size, angle and opacity. Check the preview.', 'Click Add watermark.'], 'A logo with a transparent background (PNG) looks best.'],
+  redact: [['Open a PDF.', 'Draw black boxes over what must go, or type a word and click Find and mark. Emails and phone numbers can be found the same way.', 'Check every page.', 'Click Save redacted PDF.'], 'Pages with boxes are saved as pictures, so the hidden text is truly gone.'],
+  info: [['Open a PDF.', 'Change the title, author and other details.', 'Click Save PDF.'], 'To remove all hidden details at once, use Remove hidden data.'],
+  protect: [['Open a PDF.', 'Type a password twice.', 'Optional: limit printing, copying or changes, and choose an owner password.', 'Click Protect PDF.'], 'Keep the password safe: it cannot be recovered if you lose it.'],
+  unlock: [['Drop the locked PDF in the box.', 'Type its password.', 'Click Unlock PDF.'], 'Only for PDFs you are allowed to open: you need the password.'],
+  clean: [['Open a PDF.', 'See what hidden data was found: names, attachments, scripts, comments.', 'Untick anything you want to keep.', 'Click Remove selected.'], 'Do this before sending a file to people outside your company.'],
+  compress: [['Open a PDF.', 'Pick a level: Light, Recommended or Strong.', 'Click Compress PDF and check the result and preview.', 'Click Save compressed PDF.'], 'Light keeps the text selectable. The other levels turn pages into pictures.'],
+  'pdf-to-images': [['Open a PDF.', 'Choose JPG or PNG and the sharpness.', 'Optional: type which pages.', 'Click Save images.'], 'Several pages come together in one zip file.'],
+  'extract-text': [['Open a PDF.', 'The text appears below. Type pages to show only some of them.', 'Click Copy all, or Save as .txt.'], 'No text found? The PDF is probably a scan: use Scan to text (OCR).'],
+  'extract-images': [['Open a PDF.', 'Every picture inside it appears. Untick any you do not want.', 'Choose PNG or JPG, then click Save selected.'], 'Turn on "Include very small images" to see icons and lines too.'],
+  ocr: [['Open a scanned PDF.', 'Tick the languages used in it.', 'Click Read the pages (the first time, the reading engine downloads).', 'Save the text, or a searchable PDF.'], 'A searchable PDF looks the same but lets you search and copy its words.'],
+};
+let closedGuides = new Set(); try { closedGuides = new Set(JSON.parse(localStorage.getItem('pdfkit-guides') || '[]')); } catch {}
+Object.entries(GUIDES).forEach(([v, [steps, tip]]) => {
+  const head = $(`#view-${v} .head`); if (!head) return;
+  const d = document.createElement('details'); d.className = 'guide'; d.open = !closedGuides.has(v);
+  d.innerHTML = `<summary>${icon('help')}<span>How to use this</span><span class="caret">${icon('down')}</span></summary><div class="guide-body"><ol>${steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ol>${tip ? `<p class="tip"><b>Tip</b>${escapeHtml(tip)}</p>` : ''}</div>`;
+  d.addEventListener('toggle', () => { d.open ? closedGuides.delete(v) : closedGuides.add(v); try { localStorage.setItem('pdfkit-guides', JSON.stringify([...closedGuides])); } catch {} });
+  head.after(d);
+});
+
+/* ---------- home: search the tools ---------- */
+function filterTools() {
+  const q = $('#toolSearch').value.trim().toLowerCase(); let shown = 0;
+  $$('.card').forEach(c => { const hit = !q || c.textContent.toLowerCase().includes(q) || (c.dataset.keys || '').includes(q); c.hidden = !hit; if (hit) shown++; });
+  $('#noTools').hidden = shown > 0;
+}
+
 /* ---------- SIGN ----------
    Signatures, dates and text are pictures (transparent PNG) placed on the page; positions are kept as fractions of the page,
    and turned into PDF points with the page's own viewport when saving (rotated pages included). */
@@ -3153,6 +3468,9 @@ const TOOLS = [
   ['header-footer', 'header', 'Header & footer', 'Add a title, date or page numbers to every page.'],
   ['redact', 'redact', 'Redact', 'Black out private details so they are gone for good.'],
   ['compress', 'shrink', 'Compress', 'Shrink a PDF so it is easy to email and upload.'],
+  ['protect', 'lock', 'Password protect', 'Lock a PDF so it only opens with your password.'],
+  ['unlock', 'unlock', 'Remove password', 'Make an unlocked copy of a PDF you can open.'],
+  ['clean', 'broom', 'Remove hidden data', 'Strip author names, attachments and comments before sharing.'],
   ['bookmarks', 'bookmark', 'Bookmarks', 'Add a clickable table of contents to the PDF.'],
   ['compare', 'compare', 'Compare', 'See what changed between two versions of a PDF.'],
   ['extract-text', 'txt', 'Extract text', 'Copy all the text out of a PDF, or save it as a file.'],
@@ -3163,7 +3481,18 @@ const TOOLS = [
   ['info', 'info', 'Document info', 'Edit the title, author and keywords inside a PDF.'],
   ['pdf-to-images', 'toimg', 'PDF to images', 'Save pages as sharp JPG or PNG pictures.'],
 ];
-$('#cards').innerHTML = TOOLS.map(([v, ic, t, d], i) => `<a class="card" href="#${v}" style="--i:${i}"><span class="tile">${icon(ic)}</span><b>${t}</b><span>${d}</span>${icon('arrow', 'i go')}</a>`).join('');
+// everyday words people type for each tool, so the search finds it
+const KEYS = { merge: 'combine join together add append', 'images-to-pdf': 'photo picture jpg png scan convert', organize: 'reorder move rotate delete remove pages sort arrange',
+  split: 'separate cut divide extract pages', crop: 'trim margins resize paper a4 letter size', bookmarks: 'outline contents chapters navigation', compare: 'difference diff changes versions',
+  sign: 'signature initials date', 'fill-forms': 'form fields fill in', annotate: 'comment note highlight draw arrow markup text', 'header-footer': 'header footer title date top bottom',
+  'page-numbers': 'number numbering', watermark: 'stamp logo draft confidential', redact: 'black out hide censor private remove text', info: 'title author metadata properties',
+  protect: 'password encrypt lock secure', unlock: 'password decrypt remove unlock open', clean: 'privacy metadata hidden author remove attachments', compress: 'smaller reduce shrink size email',
+  'pdf-to-images': 'jpg png picture convert export', 'extract-text': 'copy text txt word', 'extract-images': 'pictures photos save', ocr: 'scan recognize read searchable text' };
+$('#cards').innerHTML = TOOLS.map(([v, ic, t, d], i) => `<a class="card" href="#${v}" style="--i:${i}" data-keys="${KEYS[v] || ''}"><span class="tile">${icon(ic)}</span><b>${t}</b><span>${d}</span>${icon('arrow', 'i go')}</a>`).join('')
+  + '<p class="empty" id="noTools" hidden>No tool matches. Try another word, like "join", "smaller" or "sign".</p>';
+$('#toolSearch').addEventListener('input', filterTools);
+$('#toolSearch').addEventListener('keydown', e => { if (e.key === 'Enter') { const first = $$('.card').find(c => !c.hidden); if (first) location.hash = first.getAttribute('href'); } if (e.key === 'Escape') { e.target.value = ''; filterTools(); } });
+document.addEventListener('keydown', e => { if (e.key === '/' && active === 'home' && !/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) { e.preventDefault(); $('#toolSearch').focus(); } });
 
 /* ---------- navigation: the address bar's #name picks the tool, so Back and links work ---------- */
 const VIEWS = ['home', ...TOOLS.map(t => t[0])];
