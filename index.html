@@ -252,14 +252,15 @@
   .pv canvas { position: absolute; inset: 0; margin: auto; max-width: 86%; max-height: 86%; border-radius: 2px; box-shadow: 0 1px 3px rgba(0,0,0,.18), 0 6px 14px -6px rgba(0,0,0,.25); transition: transform .45s var(--spring), opacity .2s; }
   .pv .skeleton { width: 62%; height: 82%; border-radius: 3px; }
   .page .row { display: flex; align-items: center; gap: 2px; }
-  .page .row .label { flex: 1; font: 500 12.5px var(--mono); color: var(--muted); padding-left: 3px; }
+  .page .row .label { flex: 1; min-width: 0; font: 500 12.5px var(--mono); color: var(--muted); padding-left: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   /* ---------- toasts ---------- */
-  .toasts { position: fixed; z-index: 50; right: max(20px, env(safe-area-inset-right, 0px)); bottom: max(20px, env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 10px; align-items: flex-end; pointer-events: none; }
+  .toasts { position: fixed; z-index: 50; right: max(20px, env(safe-area-inset-right, 0px)); top: calc(18px + env(safe-area-inset-top, 0px)); display: flex; flex-direction: column; gap: 10px; align-items: flex-end; pointer-events: none; }
+  @media (max-width: 860px) { .toasts { top: calc(112px + env(safe-area-inset-top, 0px)); right: 12px; left: 12px; align-items: stretch; } .toasts .toast { width: auto; } }
   .toast { pointer-events: auto; position: relative; display: flex; gap: 12px; align-items: flex-start; width: min(400px, calc(100vw - 40px)); padding: 14px 14px 16px; border-radius: 14px;
     background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-3); overflow: hidden; animation: toastIn .45s var(--spring) both; }
   .toast.out { animation: toastOut .3s var(--ease) forwards; }
-  @keyframes toastIn { from { opacity: 0; transform: translateY(16px) scale(.96); } }
+  @keyframes toastIn { from { opacity: 0; transform: translateY(-14px) scale(.96); } }
   @keyframes toastOut { to { opacity: 0; transform: translateX(24px); } }
   .toast .ok { width: 30px; height: 30px; border-radius: 50%; background: var(--ok-soft); color: var(--ok); display: grid; place-items: center; flex: none; }
   .toast.info .ok { background: var(--accent-soft); color: var(--accent); }
@@ -385,6 +386,40 @@
   @media (max-width: 1100px) { .with-preview { grid-template-columns: minmax(0, 1fr); } .preview { position: static; max-width: 420px; width: 100%; margin: 0 auto; } }
   @media (max-width: 680px) { .levels { grid-template-columns: minmax(0, 1fr); } .result { grid-template-columns: minmax(0, 1fr); } .result .pthumb { display: none; } }
 
+  /* ---------- organize: selection, history, zoom ---------- */
+  .orgtools { display: flex; flex-direction: column; gap: 10px; }
+  .sep { width: 1px; height: 22px; background: var(--line-2); margin: 0 2px; }
+  svg.i.redo { transform: scaleX(-1); }
+  .btn.danger:hover { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, var(--line)); }
+  .selbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 10px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); min-height: 50px; transition: background .25s, border-color .25s; }
+  .selbar.has { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 25%, transparent); }
+  .selcount { font-size: 13.5px; font-weight: 600; color: var(--muted); padding: 0 4px; min-width: 150px; }
+  .selbar.has .selcount { color: var(--accent); }
+  .sel-only { display: none; gap: 6px; flex-wrap: wrap; }
+  .selbar.has .sel-only { display: inline-flex; animation: rise .25s var(--ease) both; }
+  .keys { font-size: 12.5px; color: var(--muted); }
+  .page { position: relative; }
+  .page .check { position: absolute; z-index: 2; top: 14px; left: 14px; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; display: grid; place-items: center;
+    box-shadow: 0 0 0 2px var(--surface), 0 2px 6px rgba(0,0,0,.25); opacity: 0; transform: scale(.4); transition: opacity .2s, transform .3s var(--spring); }
+  .page .check svg { width: 13px; height: 13px; stroke-width: 3; }
+  .page.sel { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent); }
+  .page.sel .check { opacity: 1; transform: none; }
+  .page .pos { position: absolute; top: 14px; right: 14px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 99px; background: color-mix(in srgb, var(--surface) 88%, transparent);
+    border: 1px solid var(--line); font: 600 11.5px var(--mono); color: var(--muted); display: grid; place-items: center; z-index: 2; }
+  .page .pos:empty { display: none; }
+  dialog.zoom { width: min(1000px, calc(100vw - 24px)); height: calc(100vh - 40px); max-height: none; padding: 0; }
+  dialog.zoom[open] { display: flex; flex-direction: column; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-3); overflow: hidden; animation: dlgIn .35s var(--spring) both; }
+  .zoom-bar { display: flex; align-items: center; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  .zoom-stage { flex: 1; min-height: 0; overflow: auto; display: flex; align-items: flex-start; justify-content: center; padding: 20px; background: var(--surface-2); }
+  .zoom-stage canvas { max-width: 100%; height: auto; box-shadow: 0 2px 6px rgba(0,0,0,.2), 0 20px 40px -16px rgba(0,0,0,.4); animation: rise .3s var(--ease) both; transition: opacity .2s; }
+  .zoom-stage.loading canvas { opacity: .5; }
+  .pagepick { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); font-weight: 500; }
+  .pagepick input { width: 92px; padding: 6px 9px; font-size: 13px; border-radius: 8px; }
+  .pagepick input.bad { border-color: var(--danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 18%, transparent); animation: shake .4s var(--ease); }
+  .levels.choices { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+  .levels.choices .level { box-shadow: none; }
+  @media (max-width: 600px) { .pagepick span { display: none; } .pagepick input { width: 64px; } .keys { display: none; } }
+
   /* ---------- phones ---------- */
   @media (max-width: 860px) {
     .app { grid-template-columns: minmax(0, 1fr); }
@@ -452,6 +487,9 @@
   <symbol id="i-type" viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></symbol>
   <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
   <symbol id="i-pen" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.38 3.62a2.12 2.12 0 1 1 3 3L7.37 18.64a2 2 0 0 1-.86.5l-2.87.84a.5.5 0 0 1-.62-.62l.84-2.87a2 2 0 0 1 .5-.86z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+  <symbol id="i-crop" viewBox="0 0 24 24"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></symbol>
   <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/></symbol>
 </svg>
 
@@ -473,6 +511,7 @@
       <div class="group">Pages</div>
       <a href="#organize" data-view="organize"><svg class="i"><use href="#i-grid"/></svg>Organize pages</a>
       <a href="#split" data-view="split"><svg class="i"><use href="#i-split"/></svg>Split / extract</a>
+      <a href="#crop" data-view="crop"><svg class="i"><use href="#i-crop"/></svg>Crop &amp; resize</a>
       <div class="group">Sign and fill</div>
       <a href="#sign" data-view="sign"><svg class="i"><use href="#i-sign"/></svg>Sign</a>
       <a href="#fill-forms" data-view="fill-forms"><svg class="i"><use href="#i-form"/></svg>Fill forms</a>
@@ -538,16 +577,35 @@
 
     <!-- ORGANIZE -->
     <section class="view" id="view-organize" hidden>
-      <div class="head"><span class="tile"><svg class="i"><use href="#i-grid"/></svg></span><div><h1>Organize pages</h1><p>Drag pages to reorder them. Rotate or remove any page, then save.</p></div></div>
+      <div class="head"><span class="tile"><svg class="i"><use href="#i-grid"/></svg></span><div><h1>Organize pages</h1><p>Drag to reorder. Click pages to select them, then rotate, copy or remove them together.</p></div></div>
       <div data-src></div>
-      <div class="bar" id="orgBar" hidden>
-        <button class="btn small" id="orgRotAll"><svg class="i"><use href="#i-rotr"/></svg>Rotate all</button>
-        <button class="btn small" id="orgReverse"><svg class="i"><use href="#i-swap"/></svg>Reverse</button>
-        <button class="btn small" id="orgReset"><svg class="i"><use href="#i-undo"/></svg>Undo changes</button>
-        <span class="grow"></span>
-        <span class="meta" id="orgCount"></span>
-        <button class="btn primary" id="orgGo">Save PDF</button>
+      <div class="orgtools" id="orgBar" hidden>
+        <div class="bar">
+          <button class="btn small" id="orgUndo" title="Undo (Ctrl+Z)" disabled><svg class="i"><use href="#i-undo"/></svg>Undo</button>
+          <button class="btn small" id="orgRedo" title="Redo (Ctrl+Y)" disabled><svg class="i redo"><use href="#i-undo"/></svg>Redo</button>
+          <span class="sep"></span>
+          <button class="btn small" id="orgBlank" title="Adds after the selected page, or at the end"><svg class="i"><use href="#i-plus"/></svg>Blank page</button>
+          <button class="btn small" id="orgInsert" title="Adds after the selected page, or at the end"><svg class="i"><use href="#i-file"/></svg>Insert a PDF</button>
+          <button class="btn small" id="orgReverse"><svg class="i"><use href="#i-swap"/></svg>Reverse</button>
+          <span class="grow"></span>
+          <span class="meta" id="orgCount"></span>
+          <button class="btn primary" id="orgGo">Save PDF</button>
+        </div>
+        <div class="selbar" id="orgSel">
+          <span class="selcount" id="orgSelCount">No pages selected</span>
+          <button class="btn small" data-sel="all">Select all</button>
+          <span class="sel-only">
+            <button class="btn small" data-sel="rotl" title="Shift+R"><svg class="i"><use href="#i-rotl"/></svg>Left</button>
+            <button class="btn small" data-sel="rotr" title="R"><svg class="i"><use href="#i-rotr"/></svg>Right</button>
+            <button class="btn small" data-sel="dup" title="Ctrl+D"><svg class="i"><use href="#i-copy"/></svg>Duplicate</button>
+            <button class="btn small danger" data-sel="del" title="Delete"><svg class="i"><use href="#i-trash"/></svg>Remove</button>
+            <button class="btn small ghosty" data-sel="none" title="Esc">Clear selection</button>
+          </span>
+          <span class="grow"></span>
+          <span class="keys">Double-click a page to zoom in</span>
+        </div>
       </div>
+      <input type="file" id="orgInsertPicker" accept="application/pdf,.pdf" hidden>
       <div class="grid" id="orgGrid"></div>
       <div class="status"></div>
     </section>
@@ -557,17 +615,52 @@
       <div class="head"><span class="tile"><svg class="i"><use href="#i-split"/></svg></span><div><h1>Split / extract</h1><p>Break a PDF into several files, or pull out only the pages you need.</p></div></div>
       <div data-src></div>
       <div class="form">
-        <label class="wide">What do you want?
-          <div class="seg">
-            <label><input type="radio" name="splitMode" value="each" checked><span>Every page apart</span></label>
-            <label><input type="radio" name="splitMode" value="ranges"><span>A file per range</span></label>
-            <label><input type="radio" name="splitMode" value="extract"><span>Extract into one file</span></label>
-          </div>
-        </label>
-        <label class="wide">Pages or ranges <input type="text" id="splitRanges" placeholder="e.g. 1-3, 5, 8-"></label>
-        <p class="hint wide">Separate with commas. <code>8-</code> means page 8 to the end. Several files are saved together in one zip.</p>
+        <div class="levels choices wide" id="splitModes">
+          <label class="level"><input type="radio" name="splitMode" value="each" checked><b>Every page</b><span>One file per page.</span></label>
+          <label class="level"><input type="radio" name="splitMode" value="count"><b>Every few pages</b><span>Chunks of the same number of pages.</span></label>
+          <label class="level"><input type="radio" name="splitMode" value="ranges"><b>Page ranges</b><span>One file for each range you type.</span></label>
+          <label class="level"><input type="radio" name="splitMode" value="extract"><b>Extract</b><span>The pages you pick, in one file.</span></label>
+          <label class="level"><input type="radio" name="splitMode" value="size"><b>By file size</b><span>Files under a size limit, e.g. for email.</span></label>
+        </div>
+        <label class="wide" data-for="ranges extract">Pages or ranges <input type="text" id="splitRanges" placeholder="e.g. 1-3, 5, 8-"></label>
+        <p class="hint wide" data-for="ranges extract">Separate with commas. <code>8-</code> means page 8 to the end.</p>
+        <label data-for="count">Pages in each file <input type="number" id="splitCount" value="2" min="1"></label>
+        <label data-for="size">Largest file size (MB) <input type="number" id="splitSize" value="5" min="0.1" step="0.5"></label>
+        <p class="hint wide" data-for="each count ranges size" id="splitHint">Several files are saved together in one zip.</p>
       </div>
       <div class="bar"><span class="grow"></span><button class="btn primary" id="splitGo">Split PDF</button></div>
+      <div class="status"></div>
+    </section>
+
+    <!-- CROP & RESIZE -->
+    <section class="view" id="view-crop" hidden>
+      <div class="head"><span class="tile"><svg class="i"><use href="#i-crop"/></svg></span><div><h1>Crop &amp; resize</h1><p>Trim the edges of your pages, or change them to another paper size.</p></div></div>
+      <div data-src></div>
+      <div class="with-preview">
+        <div class="form">
+          <div class="levels choices wide">
+            <label class="level"><input type="radio" name="cropMode" value="trim" checked><b>Trim white edges</b><span>Finds the content and cuts the empty margin around it.</span></label>
+            <label class="level"><input type="radio" name="cropMode" value="margins"><b>Cut margins</b><span>Cut the same amount from each side you choose.</span></label>
+            <label class="level"><input type="radio" name="cropMode" value="resize"><b>Change paper size</b><span>Fit pages onto A4, Letter, A5 or Legal.</span></label>
+          </div>
+          <label data-crop="trim">Space to keep around the content (mm) <input type="number" id="cropPad" value="5" min="0" max="50"></label>
+          <label data-crop="margins">Top (mm) <input type="number" id="cropT" value="10" min="0"></label>
+          <label data-crop="margins">Bottom (mm) <input type="number" id="cropB" value="10" min="0"></label>
+          <label data-crop="margins">Left (mm) <input type="number" id="cropL" value="10" min="0"></label>
+          <label data-crop="margins">Right (mm) <input type="number" id="cropR" value="10" min="0"></label>
+          <label data-crop="resize">Paper size
+            <select id="cropPaper"><option value="a4">A4 (210 × 297 mm)</option><option value="letter">Letter (8.5 × 11 in)</option><option value="a5">A5 (148 × 210 mm)</option><option value="legal">Legal (8.5 × 14 in)</option><option value="a3">A3 (297 × 420 mm)</option></select>
+          </label>
+          <label data-crop="resize">Orientation
+            <select id="cropOrient"><option value="auto">Follow each page</option><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select>
+          </label>
+          <label data-crop="resize">Margin (mm) <input type="number" id="cropMargin" value="0" min="0" max="60"></label>
+          <label class="wide">Pages <input type="text" id="cropPages" placeholder="All pages, or e.g. 1-3, 5"></label>
+          <p class="hint wide" data-crop="resize">Changing the paper size keeps how the page looks, but links on the page stop working.</p>
+        </div>
+        <div class="preview" data-preview="crop"></div>
+      </div>
+      <div class="bar"><span class="grow"></span><button class="btn primary" id="cropGo">Save PDF</button></div>
       <div class="status"></div>
     </section>
 
@@ -721,6 +814,17 @@
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <input type="file" id="singlePicker" accept="application/pdf,.pdf" hidden>
 
+<dialog id="zoomDlg" class="zoom" aria-label="Page zoom">
+  <div class="zoom-bar">
+    <button class="ibtn" id="zoomPrev" aria-label="Previous page"><svg class="i"><use href="#i-left"/></svg></button>
+    <span class="meta" id="zoomLabel"></span>
+    <button class="ibtn" id="zoomNext" aria-label="Next page"><svg class="i"><use href="#i-right"/></svg></button>
+    <span class="grow"></span>
+    <button class="ibtn" id="zoomClose" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button>
+  </div>
+  <div class="zoom-stage" id="zoomStage"></div>
+</dialog>
+
 <dialog id="sigDlg" aria-labelledby="sigDlgTitle">
   <div class="dlg">
     <div class="dlg-head"><h2 id="sigDlgTitle">Create your signature</h2><button class="ibtn" id="sigClose" aria-label="Close"><svg class="i"><use href="#i-x"/></svg></button></div>
@@ -785,6 +889,7 @@ const isPdf = f => f.type === 'application/pdf' || /\.pdf$/i.test(f.name);
 const isImg = f => /^image\/(jpeg|png|webp|gif|bmp)$/.test(f.type) || /\.(jpe?g|png|webp|gif|bmp)$/i.test(f.name);
 const radio = name => $(`input[name=${name}]:checked`).value;
 const nextFrame = () => new Promise(r => requestAnimationFrame(() => r()));
+const escapeHtml = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 // status line under each tool: plain text, an error, or a progress bar
 function setStatus(p, msg, kind = '') {
@@ -900,7 +1005,7 @@ function makeDrop(el, { multiple, accept, title, sub, onFiles }) {
 }
 
 /* ---------- reorderable file list (merge, images) ---------- */
-function fileList(ul, items, meta, onChange) {
+function fileList(ul, items, meta, onChange, extra) {
   let dragging = null;
   function render() {
     ul.innerHTML = '';
@@ -915,7 +1020,8 @@ function fileList(ul, items, meta, onChange) {
       $('.name', li).textContent = it.file.name; $('.name', li).title = it.file.name;
       $('.meta', li).textContent = meta(it);
       if (it.thumb) $('.thumb', li).appendChild(it.thumb); else $('.thumb', li).classList.add('skeleton');
-      const [up, down, del] = $$('button', li);
+      if (extra) { const x = extra(it, li); if (x) $('.tools', li).before(x); }
+      const [up, down, del] = $$('.tools button', li);
       up.onclick = () => { [items[i - 1], items[i]] = [items[i], items[i - 1]]; render(); };
       down.onclick = () => { [items[i + 1], items[i]] = [items[i], items[i + 1]]; render(); };
       del.onclick = () => { li.classList.add('leaving'); setTimeout(() => { items.splice(items.indexOf(it), 1); render(); }, 200); };
@@ -943,6 +1049,16 @@ merge.render = fileList($('#mergeList'), merge.items,
     $('#mergeClear').hidden = !merge.items.length;
     $('[data-drop=merge]').classList.toggle('compact', merge.items.length > 0);
     $('[data-drop=merge] strong').textContent = merge.items.length ? 'Add more PDFs' : 'Drop PDF files here';
+  },
+  // which pages of this file go in (empty = all of them)
+  (it, li) => {
+    if (!(it.pages > 1)) return null;
+    const box = document.createElement('label'); box.className = 'pagepick';
+    box.innerHTML = `<span>Pages</span><input type="text" placeholder="All" aria-label="Pages of ${escapeHtml(it.file.name)} to include">`;
+    const inp = $('input', box); inp.value = it.range || '';
+    inp.oninput = () => { it.range = inp.value; inp.classList.remove('bad'); };
+    inp.onfocus = () => { li.draggable = false; }; inp.onblur = () => { li.draggable = true; };
+    return box;
   });
 makeDrop($('[data-drop=merge]'), { multiple: true, accept: 'application/pdf,.pdf', title: 'Drop PDF files here', sub: 'Add two or more PDFs. You can reorder them next.', onFiles: async list => {
   const pdfs = list.filter(isPdf), p = view('merge');
@@ -961,10 +1077,16 @@ makeDrop($('[data-drop=merge]'), { multiple: true, accept: 'application/pdf,.pdf
 $('#mergeClear').onclick = () => { merge.items.length = 0; merge.render(); setStatus(view('merge'), ''); };
 $('#mergeGo').onclick = () => busy(view('merge'), $('#mergeGo'), async () => {
   const p = view('merge'), out = await PDFDocument.create(), n = merge.items.length;
+  // check every page choice before doing any work
+  const picks = merge.items.map((it, i) => {
+    if (!(it.range || '').trim()) return null;
+    try { return parseRanges(it.range, it.pages).flat(); }
+    catch (e) { $$('#mergeList li')[i]?.querySelector('.pagepick input')?.classList.add('bad'); throw new Error(`${it.file.name}: ${e.message}`); }
+  });
   for (let i = 0; i < n; i++) {
     const f = merge.items[i].file; setProgress(p, `Adding ${f.name}`, i / n); await nextFrame();
     let src; try { src = await loadLib(await f.arrayBuffer()); } catch { throw new Error(`Could not read "${f.name}". It may be damaged or password-protected.`); }
-    (await out.copyPages(src, src.getPageIndices())).forEach(pg => out.addPage(pg));
+    (await out.copyPages(src, picks[i] || src.getPageIndices())).forEach(pg => out.addPage(pg));
   }
   setProgress(p, 'Saving…', .95); await nextFrame();
   const bytes = await out.save(), name = withPdf($('#mergeName').value.trim() || 'merged.pdf');
@@ -1041,6 +1163,7 @@ function refreshActive() {
   if (active === 'fill-forms') buildForms();
   if (active === 'page-numbers') numPreview.draw();
   if (active === 'watermark') wmPreview.draw();
+  if (active === 'crop') cropPreview.draw();
 }
 async function useResult(bytes, name) {
   await setCurrent(name, new Uint8Array(bytes));
@@ -1078,85 +1201,323 @@ async function saved(p, bytes, name, detail) {
 }
 
 /* ---------- ORGANIZE ---------- */
+/* Each card is an entry: a page of the open PDF ('main'), of a PDF inserted here ('x1', 'x2'…) or a blank page.
+   Thumbnails are drawn once per source page and copied onto the cards, so duplicates and undo cost nothing. */
 let org = { pages: [], for: null, token: 0 };
+let orgId = 0;
+const norm = a => ((a % 360) + 360) % 360;
+function freshOrg() {
+  return { pages: [], for: current, token: org.token + 1, sel: new Set(), last: null, hist: [], fut: [],
+    thumbs: new Map(), sizes: new Map(), srcs: new Map([['main', { bytes: current.bytes, name: current.name }]]), nx: 0 };
+}
+const keyOf = e => e.src === 'blank' ? `blank:${e.w}x${e.h}` : `${e.src}:${e.idx}`;
+const entry = (src, idx, extra = {}) => ({ id: ++orgId, src, idx, rot: 0, del: false, ...extra });
 async function buildOrganize() {
   if (!current || org.for === current) return;
-  org = { pages: [], for: current, token: org.token + 1 };
-  const token = org.token;
-  org.pages = Array.from({ length: current.pages }, (_, i) => ({ idx: i, rot: 0, del: false, canvas: null, shown: false }));
+  org = freshOrg();
+  org.pages = Array.from({ length: current.pages }, (_, i) => entry('main', i));
   drawOrganize();
-  const js = await loadJs(current.bytes);
-  for (const pg of org.pages) {
-    if (token !== org.token) break;
-    pg.canvas = await renderPage(js, pg.idx + 1, 220);
-    const box = $(`#orgGrid [data-idx="${pg.idx}"] .pv`);
-    if (box) { box.innerHTML = ''; box.appendChild(pg.canvas); pg.canvas.style.transform = `rotate(${pg.rot}deg)`; }
-  }
-  js.destroy();
+  loadThumbs('main', current.bytes, org.token);
 }
+async function loadThumbs(src, bytes, token) {
+  const js = await loadJs(bytes);
+  try {
+    for (let i = 0; i < js.numPages; i++) {
+      if (token !== org.token) return;
+      const page = await js.getPage(i + 1), vp = page.getViewport({ scale: 1 });
+      org.sizes.set(`${src}:${i}`, [vp.width, vp.height]);
+      const c = await renderPage(js, i + 1, 220);
+      org.thumbs.set(`${src}:${i}`, c);
+      $$(`#orgGrid .page[data-key="${src}:${i}"] .pv`).forEach(box => paintThumb(box, org.pages.find(e => e.id === +box.parentNode.dataset.id)));
+    }
+  } finally { js.destroy(); }
+}
+function blankThumb(w, h) {
+  const k = `blank:${w}x${h}`;
+  if (!org.thumbs.has(k)) { const c = document.createElement('canvas'); c.width = 220; c.height = Math.round(220 * h / w); const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); org.thumbs.set(k, c); }
+  return org.thumbs.get(k);
+}
+function paintThumb(box, e) {
+  const master = e && org.thumbs.get(keyOf(e)); if (!box || !master) return;
+  const c = document.createElement('canvas'); c.width = master.width; c.height = master.height; c.getContext('2d').drawImage(master, 0, 0);
+  c.style.transform = `rotate(${e.rot}deg)`; box.innerHTML = ''; box.appendChild(c);
+}
+// history: every change is recorded first, so Undo and Redo always work
+const snap = () => org.pages.map(e => ({ ...e }));
+function commit() { org.hist.push(snap()); if (org.hist.length > 80) org.hist.shift(); org.fut = []; }
+function undo() { if (!org.hist.length) return; org.fut.push(snap()); org.pages = org.hist.pop(); pruneSel(); drawOrganize(); }
+function redo() { if (!org.fut.length) return; org.hist.push(snap()); org.pages = org.fut.pop(); pruneSel(); drawOrganize(); }
+function pruneSel() { const ids = new Set(org.pages.map(e => e.id)); [...org.sel].forEach(id => { if (!ids.has(id)) org.sel.delete(id); }); }
+const selected = () => org.pages.filter(e => org.sel.has(e.id));
 let orgDrag = null;
 function drawOrganize() {
   const grid = $('#orgGrid'); grid.innerHTML = '';
-  org.pages.forEach((pg, i) => {
-    const card = document.createElement('div'); card.className = 'page' + (pg.del ? ' deleted' : '') + (pg.shown ? '' : ' new');
-    card.style.setProperty('--i', i); pg.shown = true; card.draggable = true; card.dataset.idx = pg.idx;
-    card.innerHTML = `<div class="pv">${pg.canvas ? '' : '<span class="skeleton"></span>'}</div><div class="row"><span class="label">p. ${pg.idx + 1}</span>
+  let n = 0;
+  org.pages.forEach((e, i) => {
+    const card = document.createElement('div');
+    card.className = 'page' + (e.del ? ' deleted' : '') + (e.shown ? '' : ' new') + (org.sel.has(e.id) ? ' sel' : '');
+    card.style.setProperty('--i', i); e.shown = true; card.draggable = true; card.dataset.id = e.id; card.dataset.key = keyOf(e);
+    const tag = e.src === 'blank' ? 'Blank' : e.src === 'main' ? `p. ${e.idx + 1}` : `${e.src.toUpperCase()} · ${e.idx + 1}`;
+    if (!e.del) n++;
+    card.innerHTML = `<span class="check">${icon('check')}</span><div class="pv"><span class="skeleton"></span></div><div class="row"><span class="label" title="${e.src === 'main' ? 'Page ' + (e.idx + 1) + ' of the original' : e.src === 'blank' ? 'A blank page' : 'From ' + escapeHtml(org.srcs.get(e.src)?.name || '')}">${tag}</span>
       <button class="ibtn" title="Rotate left" aria-label="Rotate left">${icon('rotl')}</button><button class="ibtn" title="Rotate right" aria-label="Rotate right">${icon('rotr')}</button>
-      <button class="ibtn del" title="${pg.del ? 'Keep this page' : 'Remove this page'}" aria-label="${pg.del ? 'Keep this page' : 'Remove this page'}">${icon(pg.del ? 'undo' : 'trash')}</button></div>`;
-    if (pg.canvas) { $('.pv', card).appendChild(pg.canvas); pg.canvas.style.transform = `rotate(${pg.rot}deg)`; }
-    const [l, r, d] = $$('button', card);
-    const turn = k => { pg.rot += k; if (pg.canvas) pg.canvas.style.transform = `rotate(${pg.rot}deg)`; };   // not wrapped, so the turn always animates the short way
-    l.onclick = () => turn(-90); r.onclick = () => turn(90);
-    d.onclick = () => { pg.del = !pg.del; drawOrganize(); };
-    card.addEventListener('dragstart', e => { orgDrag = pg; e.dataTransfer.effectAllowed = 'move'; requestAnimationFrame(() => card.classList.add('dragging')); });
+      <button class="ibtn del" title="${e.del ? 'Keep this page' : 'Remove this page'}" aria-label="${e.del ? 'Keep this page' : 'Remove this page'}">${icon(e.del ? 'undo' : 'trash')}</button></div>
+      <span class="pos">${e.del ? '' : n}</span>`;
+    if (e.src === 'blank') blankThumb(e.w, e.h);
+    paintThumb($('.pv', card), e);
+    const [l, r, d] = $$('.row button', card);
+    const turn = k => { commit(); e.rot += k; const c = $('.pv canvas', card); if (c) c.style.transform = `rotate(${e.rot}deg)`; updateOrgBar(); };   // not wrapped, so the turn animates the short way
+    l.onclick = ev => { ev.stopPropagation(); turn(-90); }; r.onclick = ev => { ev.stopPropagation(); turn(90); };
+    d.onclick = ev => { ev.stopPropagation(); commit(); e.del = !e.del; drawOrganize(); };
+    card.addEventListener('click', ev => {
+      if (ev.target.closest('button')) return;
+      if (ev.shiftKey && org.last) {
+        const a = org.pages.findIndex(x => x.id === org.last), b = org.pages.indexOf(e);
+        org.pages.slice(Math.min(a, b), Math.max(a, b) + 1).forEach(x => org.sel.add(x.id));
+      } else if (org.sel.has(e.id)) org.sel.delete(e.id); else org.sel.add(e.id);
+      org.last = e.id; $$('#orgGrid .page').forEach(c => c.classList.toggle('sel', org.sel.has(+c.dataset.id))); updateOrgBar();
+    });
+    card.addEventListener('dblclick', ev => { if (!ev.target.closest('button')) openZoom(org.pages.indexOf(e)); });
+    card.addEventListener('dragstart', ev => { commit(); orgDrag = e; ev.dataTransfer.effectAllowed = 'move'; requestAnimationFrame(() => card.classList.add('dragging')); });
     card.addEventListener('dragend', () => { orgDrag = null; drawOrganize(); });
-    card.addEventListener('dragover', e => {
-      if (!orgDrag || orgDrag === pg) return; e.preventDefault();
-      const from = org.pages.indexOf(orgDrag), to = org.pages.indexOf(pg);
+    card.addEventListener('dragover', ev => {
+      if (!orgDrag || orgDrag === e) return; ev.preventDefault();
+      const from = org.pages.indexOf(orgDrag), to = org.pages.indexOf(e);
       org.pages.splice(from, 1); org.pages.splice(to, 0, orgDrag); drawOrganize();
       grid.children[to].classList.add('dragging');
     });
     grid.appendChild(card);
   });
-  const kept = org.pages.filter(p => !p.del).length;
-  $('#orgCount').textContent = `${kept} of ${org.pages.length} kept`;
+  updateOrgBar();
 }
-$('#orgRotAll').onclick = () => { org.pages.forEach(p => { p.rot += 90; if (p.canvas) p.canvas.style.transform = `rotate(${p.rot}deg)`; }); };
-$('#orgReverse').onclick = () => { org.pages.reverse(); drawOrganize(); };
-$('#orgReset').onclick = () => { org.pages.sort((a, b) => a.idx - b.idx).forEach(p => { p.rot = 0; p.del = false; }); drawOrganize(); };
+function updateOrgBar() {
+  const kept = org.pages.filter(p => !p.del).length, s = org.sel.size;
+  $('#orgCount').textContent = `${kept} of ${org.pages.length} kept`;
+  $('#orgSelCount').textContent = s ? `${plural(s, 'page')} selected` : 'Click pages to select them';
+  $('#orgSel').classList.toggle('has', s > 0);
+  $('#orgUndo').disabled = !org.hist.length; $('#orgRedo').disabled = !org.fut.length;
+}
+// where new pages go: after the last selected page, or at the end
+const anchor = () => { const s = selected(); return s.length ? Math.max(...s.map(e => org.pages.indexOf(e))) + 1 : org.pages.length; };
+const selAct = {
+  all: () => { org.pages.forEach(e => org.sel.add(e.id)); drawOrganize(); },
+  none: () => { org.sel.clear(); drawOrganize(); },
+  rotl: () => { if (!org.sel.size) return; commit(); selected().forEach(e => e.rot -= 90); rotateCards(); },
+  rotr: () => { if (!org.sel.size) return; commit(); selected().forEach(e => e.rot += 90); rotateCards(); },
+  dup: () => {
+    if (!org.sel.size) return; commit();
+    const copies = [];
+    [...selected()].reverse().forEach(e => { const c = { ...e, id: ++orgId, shown: false }; org.pages.splice(org.pages.indexOf(e) + 1, 0, c); copies.push(c.id); });
+    org.sel = new Set(copies); drawOrganize();
+  },
+  del: () => { if (!org.sel.size) return; commit(); const all = selected().every(e => e.del); selected().forEach(e => e.del = !all); drawOrganize(); },
+};
+function rotateCards() { selected().forEach(e => { const c = $(`#orgGrid .page[data-id="${e.id}"] .pv canvas`); if (c) c.style.transform = `rotate(${e.rot}deg)`; }); updateOrgBar(); }
+$$('[data-sel]').forEach(b => b.onclick = () => selAct[b.dataset.sel]());
+$('#orgUndo').onclick = undo; $('#orgRedo').onclick = redo;
+$('#orgReverse').onclick = () => { commit(); org.pages.reverse(); drawOrganize(); };
+$('#orgBlank').onclick = () => {
+  const ref = selected().slice(-1)[0] || org.pages[org.pages.length - 1];
+  const [w, h] = (ref && (ref.src === 'blank' ? [ref.w, ref.h] : org.sizes.get(keyOf(ref)))) || [595.28, 841.89];
+  commit(); const e = entry('blank', 0, { w: Math.round(w), h: Math.round(h) });
+  org.pages.splice(anchor(), 0, e); org.sel = new Set([e.id]); drawOrganize();
+  $(`#orgGrid .page[data-id="${e.id}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+};
+$('#orgInsert').onclick = () => $('#orgInsertPicker').click();
+$('#orgInsertPicker').onchange = async () => {
+  const f = $('#orgInsertPicker').files[0]; $('#orgInsertPicker').value = ''; if (!f) return;
+  const p = view('organize');
+  if (!isPdf(f)) { setStatus(p, `"${f.name}" is not a PDF.`, 'err'); return; }
+  try {
+    const bytes = new Uint8Array(await f.arrayBuffer()), js = await loadJs(bytes), n = js.numPages; js.destroy();
+    const key = 'x' + (++org.nx); org.srcs.set(key, { bytes, name: f.name });
+    commit(); const at = anchor(), added = Array.from({ length: n }, (_, i) => entry(key, i));
+    org.pages.splice(at, 0, ...added); org.sel = new Set(added.map(e => e.id)); drawOrganize();
+    setStatus(p, `${plural(n, 'page')} added from ${f.name}. They are marked ${key.toUpperCase()}.`);
+    loadThumbs(key, bytes, org.token);
+  } catch { setStatus(p, `Could not read "${f.name}". It may be damaged or password-protected.`, 'err'); }
+};
+document.addEventListener('keydown', ev => {
+  if (active !== 'organize' || !current || $('#zoomDlg').open || /INPUT|TEXTAREA|SELECT/.test(ev.target.tagName)) return;
+  const mod = ev.ctrlKey || ev.metaKey, k = ev.key.toLowerCase();
+  const run = f => { ev.preventDefault(); f(); };
+  if (mod && k === 'z' && !ev.shiftKey) run(undo);
+  else if (mod && (k === 'y' || (k === 'z' && ev.shiftKey))) run(redo);
+  else if (mod && k === 'a') run(selAct.all);
+  else if (mod && k === 'd') run(selAct.dup);
+  else if (!mod && k === 'r') run(ev.shiftKey ? selAct.rotl : selAct.rotr);
+  else if (!mod && (k === 'delete' || k === 'backspace')) run(selAct.del);
+  else if (k === 'escape' && org.sel.size) run(selAct.none);
+});
 $('#orgGo').onclick = () => busy(view('organize'), $('#orgGo'), async () => {
   const p = view('organize'); if (!needFile(p)) return;
   const keep = org.pages.filter(x => !x.del);
   if (!keep.length) throw new Error('Every page is removed. Keep at least one page.');
-  const src = await loadLib(current.bytes), out = await PDFDocument.create();
-  const copied = await out.copyPages(src, keep.map(x => x.idx));
-  copied.forEach((pg, i) => { pg.setRotation(degrees((((pg.getRotation().angle + keep[i].rot) % 360) + 360) % 360)); out.addPage(pg); });
+  const out = await PDFDocument.create(), docs = new Map(), made = new Map();
+  // one copy call per source document, in order (duplicates get their own page, sharing the same content)
+  for (const src of new Set(keep.filter(e => e.src !== 'blank').map(e => e.src))) {
+    if (!docs.has(src)) docs.set(src, await loadLib(org.srcs.get(src).bytes));
+    const mine = keep.filter(e => e.src === src);
+    (await out.copyPages(docs.get(src), mine.map(e => e.idx))).forEach((pg, i) => made.set(mine[i].id, pg));
+  }
+  keep.forEach(e => {
+    if (e.src === 'blank') { out.addPage([e.w, e.h]).setRotation(degrees(norm(e.rot))); return; }
+    const pg = made.get(e.id); pg.setRotation(degrees(norm(pg.getRotation().angle + e.rot))); out.addPage(pg);
+  });
   const bytes = await out.save();
   await saved(p, bytes, base(current.name) + '-organized.pdf', `${plural(keep.length, 'page')} · ${size(bytes.length)}`);
 });
+
+/* zoom: a big view of one page, with the arrows to move through the document as arranged */
+let zoomAt = 0, zoomToken = 0;
+const zjs = new Map();   // source -> pdf.js document, kept while zooming
+async function openZoom(i) {
+  zoomAt = i; const d = $('#zoomDlg'); if (!d.open) d.showModal(); await drawZoom();
+}
+async function drawZoom() {
+  const t = ++zoomToken, e = org.pages[zoomAt], stage = $('#zoomStage'); if (!e) return;
+  $('#zoomLabel').textContent = `${zoomAt + 1} of ${org.pages.length}${e.del ? ' · removed' : ''}`;
+  $('#zoomPrev').disabled = zoomAt === 0; $('#zoomNext').disabled = zoomAt >= org.pages.length - 1;
+  stage.classList.add('loading');
+  const W = Math.min(1600, Math.round((stage.clientWidth || 800) * (devicePixelRatio || 1)));
+  let c;
+  if (e.src === 'blank') {
+    const r = norm(e.rot) % 180 ? [e.h, e.w] : [e.w, e.h]; c = document.createElement('canvas'); c.width = W; c.height = Math.round(W * r[1] / r[0]);
+    const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height);
+  } else {
+    if (!zjs.has(e.src)) zjs.set(e.src, await loadJs(org.srcs.get(e.src).bytes));
+    const page = await zjs.get(e.src).getPage(e.idx + 1), rotation = norm(page.rotate + e.rot);
+    const v1 = page.getViewport({ scale: 1, rotation }), vp = page.getViewport({ scale: W / v1.width, rotation });
+    c = document.createElement('canvas'); c.width = Math.ceil(vp.width); c.height = Math.ceil(vp.height);
+    const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height);
+    await page.render({ canvasContext: x, viewport: vp }).promise;
+  }
+  if (t !== zoomToken) return;
+  stage.innerHTML = ''; stage.appendChild(c); stage.classList.remove('loading');
+}
+$('#zoomPrev').onclick = () => { if (zoomAt > 0) { zoomAt--; drawZoom(); } };
+$('#zoomNext').onclick = () => { if (zoomAt < org.pages.length - 1) { zoomAt++; drawZoom(); } };
+$('#zoomClose').onclick = () => $('#zoomDlg').close();
+$('#zoomDlg').addEventListener('click', e => { if (e.target.id === 'zoomDlg') $('#zoomDlg').close(); });
+document.addEventListener('keydown', e => { if (!$('#zoomDlg').open) return; if (e.key === 'ArrowLeft') { e.preventDefault(); $('#zoomPrev').click(); } if (e.key === 'ArrowRight') { e.preventDefault(); $('#zoomNext').click(); } });
+$('#zoomDlg').addEventListener('close', () => { zjs.forEach(j => j.destroy()); zjs.clear(); });
 
 /* ---------- SPLIT ---------- */
 $('#splitGo').onclick = () => busy(view('split'), $('#splitGo'), async () => {
   const p = view('split'); if (!needFile(p)) return;
   const mode = radio('splitMode'), n = current.pages, b = base(current.name);
-  const groups = mode === 'each' ? Array.from({ length: n }, (_, i) => [i]) : parseRanges($('#splitRanges').value, n);
   const src = await loadLib(current.bytes);
   const build = async idx => { const o = await PDFDocument.create(); (await o.copyPages(src, idx)).forEach(pg => o.addPage(pg)); return o.save(); };
   const label = idx => idx.length === 1 ? `page-${idx[0] + 1}` : `pages-${idx[0] + 1}-${idx[idx.length - 1] + 1}`;
-  if (mode === 'extract' || groups.length === 1) {
+  const all = Array.from({ length: n }, (_, i) => i);
+  let groups, files = null, note = '';
+  if (mode === 'each') groups = all.map(i => [i]);
+  else if (mode === 'count') {
+    const k = Math.floor(+$('#splitCount').value);
+    if (!(k >= 1)) throw new Error('Type how many pages go in each file (1 or more).');
+    groups = []; for (let i = 0; i < n; i += k) groups.push(all.slice(i, i + k));
+  } else if (mode === 'size') {
+    const limit = +$('#splitSize').value * 1048576;
+    if (!(limit > 0)) throw new Error('Type the largest size each file may have, in MB.');
+    // pages go into the current file until the next one would push it over the limit; the size is measured, not guessed
+    files = []; let cur = [], curBytes = null, over = 0;
+    for (let i = 0; i < n; i++) {
+      setProgress(p, `Measuring page ${i + 1} of ${n}`, i / n); await nextFrame();
+      const tryBytes = await build([...cur, i]);
+      if (tryBytes.length <= limit || !cur.length) {
+        cur.push(i); curBytes = tryBytes;
+        if (cur.length === 1 && tryBytes.length > limit) over++;
+      } else { files.push({ idx: cur, bytes: curBytes }); cur = [i]; curBytes = await build(cur); if (curBytes.length > limit) over++; }
+    }
+    if (cur.length) files.push({ idx: cur, bytes: curBytes });
+    if (over) note = ` ${plural(over, 'page')} ${over === 1 ? 'is' : 'are'} bigger than the limit on ${over === 1 ? 'its' : 'their'} own, so ${over === 1 ? 'it has' : 'they have'} a file each.`;
+  } else groups = parseRanges($('#splitRanges').value, n);
+  if (!files && (mode === 'extract' || groups.length === 1)) {
     const idx = groups.flat(), bytes = await build(idx);
-    await saved(p, bytes, `${b}-${groups.length > 1 ? 'extract' : label(idx)}.pdf`, `${plural(idx.length, 'page')} · ${size(bytes.length)}`);
+    await saved(p, bytes, `${b}-${mode === 'extract' && groups.length > 1 ? 'extract' : label(idx)}.pdf`, `${plural(idx.length, 'page')} · ${size(bytes.length)}`);
     return;
   }
-  const zip = new JSZip();
-  for (let i = 0; i < groups.length; i++) { setProgress(p, `Making file ${i + 1} of ${groups.length}`, i / groups.length); await nextFrame(); zip.file(`${b}-${label(groups[i])}.pdf`, await build(groups[i])); }
-  setProgress(p, 'Packing the zip…', .95);
+  if (!files) {
+    files = [];
+    for (let i = 0; i < groups.length; i++) { setProgress(p, `Making file ${i + 1} of ${groups.length}`, i / groups.length); await nextFrame(); files.push({ idx: groups[i], bytes: await build(groups[i]) }); }
+  }
+  if (files.length === 1) { await saved(p, files[0].bytes, `${b}-${label(files[0].idx)}.pdf`, `The whole PDF fits in one file · ${size(files[0].bytes.length)}`); return; }
+  setProgress(p, 'Packing the zip…', .96);
+  const zip = new JSZip(); files.forEach(f => zip.file(`${b}-${label(f.idx)}.pdf`, f.bytes));
   const blob = await zip.generateAsync({ type: 'blob' });
-  setStatus(p, '');
-  await download(blob, `${b}-split.zip`, 'application/zip', sn => toast(`Saved ${sn}`, `${plural(groups.length, 'PDF file')} · ${size(blob.size)}`));
+  setStatus(p, note.trim() ? note.trim() : '');
+  await download(blob, `${b}-split.zip`, 'application/zip', sn => toast(`Saved ${sn}`, `${plural(files.length, 'PDF file')} · ${size(blob.size)}`));
 });
-$$('input[name=splitMode]').forEach(r => r.onchange = () => { $('#splitRanges').disabled = radio('splitMode') === 'each'; if (radio('splitMode') !== 'each') $('#splitRanges').focus(); });
-$('#splitRanges').disabled = true;
+function splitModeChanged() {
+  const m = radio('splitMode');
+  $$('#view-split [data-for]').forEach(el => { el.hidden = !el.dataset.for.split(' ').includes(m); });
+}
+$$('input[name=splitMode]').forEach(r => r.onchange = () => { splitModeChanged(); const f = { ranges: '#splitRanges', extract: '#splitRanges', count: '#splitCount', size: '#splitSize' }[radio('splitMode')]; if (f) $(f).focus(); });
+splitModeChanged();
+
+/* ---------- CROP & RESIZE ---------- */
+const MM = 72 / 25.4;
+const PAPER = { a4: [595.28, 841.89], letter: [612, 792], a5: [419.53, 595.28], legal: [612, 1008], a3: [841.89, 1190.55] };
+function cropModeChanged() { const m = radio('cropMode'); $$('#view-crop [data-crop]').forEach(el => { el.hidden = el.dataset.crop !== m; }); }
+$$('input[name=cropMode]').forEach(r => r.addEventListener('change', cropModeChanged));
+cropModeChanged();
+// the content box of a page as seen on screen, found by drawing it small and looking for non-white pixels
+async function contentBox(jsPage) {
+  const vp = jsPage.getViewport({ scale: 0.6 }), c = document.createElement('canvas'); c.width = Math.ceil(vp.width); c.height = Math.ceil(vp.height);
+  const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height);
+  await jsPage.render({ canvasContext: x, viewport: vp }).promise;
+  const d = x.getImageData(0, 0, c.width, c.height).data; let x0 = c.width, y0 = c.height, x1 = -1, y1 = -1;
+  for (let yy = 0; yy < c.height; yy++) for (let xx = 0; xx < c.width; xx++) { const i = (yy * c.width + xx) * 4; if (d[i] < 240 || d[i + 1] < 240 || d[i + 2] < 240) { if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (yy < y0) y0 = yy; if (yy > y1) y1 = yy; } }
+  if (x1 < 0) return null;
+  // both corners back to PDF points (handles rotated pages)
+  const a = vp.convertToPdfPoint(x0, y0), b = vp.convertToPdfPoint(x1 + 1, y1 + 1);
+  return { x: Math.min(a[0], b[0]), y: Math.min(a[1], b[1]), w: Math.abs(a[0] - b[0]), h: Math.abs(a[1] - b[1]) };
+}
+let cropJs = { for: null, js: null };
+async function cropJsDoc() { if (cropJs.for !== current) { if (cropJs.js) cropJs.js.destroy(); cropJs = { for: current, js: await loadJs(current.bytes) }; } return cropJs.js; }
+// doc's pages are the pages `orig` of the open PDF
+async function applyCrop(doc, orig) {
+  const m = radio('cropMode'), js = await cropJsDoc();
+  const pick = $('#cropPages').value.trim() ? new Set(parseRanges($('#cropPages').value, current.pages).flat()) : null;
+  const pages = doc.getPages();
+  for (let j = 0; j < pages.length; j++) {
+    const i = orig[j]; if (pick && !pick.has(i)) continue;
+    const pg = pages[j], box = pg.getCropBox(), rot = norm(pg.getRotation().angle);
+    if (m === 'trim') {
+      const cb = await contentBox(await js.getPage(i + 1)); if (!cb) continue;
+      const pad = Math.max(0, +$('#cropPad').value || 0) * MM;
+      const x0 = Math.max(box.x, cb.x - pad), y0 = Math.max(box.y, cb.y - pad), x1 = Math.min(box.x + box.width, cb.x + cb.w + pad), y1 = Math.min(box.y + box.height, cb.y + cb.h + pad);
+      pg.setCropBox(x0, y0, x1 - x0, y1 - y0);
+    } else if (m === 'margins') {
+      // the sides as seen on screen, turned into the page's own sides for rotated pages
+      let [t, b, l, r] = ['#cropT', '#cropB', '#cropL', '#cropR'].map(s => Math.max(0, +$(s).value || 0) * MM);
+      for (let k = 0; k < rot / 90; k++) [t, r, b, l] = [r, b, l, t];
+      if (l + r >= box.width - 10 || t + b >= box.height - 10) throw new Error('Those margins would cut away the whole page. Use smaller numbers.');
+      pg.setCropBox(box.x + l, box.y + b, box.width - l - r, box.height - t - b);
+    } else {
+      let [W, H] = PAPER[$('#cropPaper').value];
+      const seenW = rot % 180 ? box.height : box.width, seenH = rot % 180 ? box.width : box.height, o = $('#cropOrient').value;
+      if (o === 'landscape' || (o === 'auto' && seenW > seenH)) [W, H] = [H, W];
+      const mg = Math.max(0, +$('#cropMargin').value || 0) * MM;
+      const emb = await doc.embedPage(pg, { left: box.x, bottom: box.y, right: box.x + box.width, top: box.y + box.height });
+      const np = doc.insertPage(doc.getPages().indexOf(pg), [W, H]);
+      // draw the old page upright (its rotation applied), scaled to fit and centred
+      const s = Math.min((W - 2 * mg) / seenW, (H - 2 * mg) / seenH), dw = seenW * s, dh = seenH * s, ox = (W - dw) / 2, oy = (H - dh) / 2;
+      const place = { 0: { x: ox, y: oy, rotate: 0 }, 90: { x: ox, y: oy + dh, rotate: -90 }, 180: { x: ox + dw, y: oy + dh, rotate: 180 }, 270: { x: ox + dw, y: oy, rotate: 90 } }[rot];
+      np.drawPage(emb, { x: place.x, y: place.y, xScale: s, yScale: s, rotate: degrees(place.rotate) });
+      doc.removePage(doc.getPages().indexOf(pg));
+    }
+  }
+}
+const cropPreview = makePreview('crop', 'crop', (doc, orig) => applyCrop(doc, orig));
+$('#cropGo').onclick = () => busy(view('crop'), $('#cropGo'), async () => {
+  const p = view('crop'); if (!needFile(p)) return;
+  setProgress(p, 'Working on the pages…', .3); await nextFrame();
+  const doc = await loadLib(current.bytes);
+  await applyCrop(doc, doc.getPageIndices());
+  const m = radio('cropMode');
+  await saved(p, await doc.save(), base(current.name) + (m === 'resize' ? '-' + $('#cropPaper').value : '-cropped') + '.pdf');
+});
 
 /* ---------- live preview (page numbers, watermark) ----------
    The page shown is cut out of the real PDF and stamped by the same code that saves, so what you see is what you get. */
@@ -1671,6 +2032,7 @@ const TOOLS = [
   ['images-to-pdf', 'image', 'Images to PDF', 'Turn photos and scans into a clean PDF.'],
   ['organize', 'grid', 'Organize pages', 'Reorder, rotate and remove pages visually.'],
   ['split', 'split', 'Split / extract', 'Break a PDF apart or keep only the pages you need.'],
+  ['crop', 'crop', 'Crop & resize', 'Trim white edges or change the paper size.'],
   ['sign', 'sign', 'Sign', 'Draw, type or upload your signature and place it.'],
   ['fill-forms', 'form', 'Fill forms', 'Fill in the boxes of a fillable PDF form.'],
   ['compress', 'shrink', 'Compress', 'Shrink a PDF so it is easy to email and upload.'],
